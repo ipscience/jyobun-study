@@ -1397,28 +1397,29 @@
         
         // ドラッグ機能
         let isDragging = false;
-        let dragStartX = 0;
-        let dragStartY = 0;
-        let modalStartX = 0;
-        let modalStartY = 0;
+        let offsetX = 0;
+        let offsetY = 0;
         
         modalHeader.addEventListener('mousedown', (e) => {
             if (e.target === closeBtn) return;
+            if (e.target.closest('.modal-minimize')) return;
             isDragging = true;
-            dragStartX = e.clientX;
-            dragStartY = e.clientY;
             const rect = modalContent.getBoundingClientRect();
-            modalStartX = rect.left;
-            modalStartY = rect.top;
+            // クリック位置とウィンドウ左上からのオフセットを記録
+            offsetX = e.clientX - rect.left;
+            offsetY = e.clientY - rect.top;
+            // transformを解除して現在位置を固定
+            modalContent.style.left = rect.left + 'px';
+            modalContent.style.top = rect.top + 'px';
+            modalContent.style.transform = 'none';
             e.preventDefault();
         });
         
         document.addEventListener('mousemove', (e) => {
             if (!isDragging) return;
-            const dx = e.clientX - dragStartX;
-            const dy = e.clientY - dragStartY;
-            modalContent.style.left = (modalStartX + dx) + 'px';
-            modalContent.style.top = (modalStartY + dy) + 'px';
+            // マウス位置からオフセットを引いた位置にウィンドウを配置
+            modalContent.style.left = (e.clientX - offsetX) + 'px';
+            modalContent.style.top = (e.clientY - offsetY) + 'px';
             modalContent.style.transform = 'none';
         });
         
@@ -1520,19 +1521,19 @@
             searchModal.classList.remove('active');
         });
         
-        // 背景クリックで閉じる
-        searchModal.addEventListener('click', (e) => {
-            if (e.target === searchModal) {
-                searchModal.classList.remove('active');
-            }
-        });
+        // 背景クリックで閉じる動作は無効化（ユーザー要望）
+        // searchModal.addEventListener('click', (e) => {
+        //     if (e.target === searchModal) {
+        //         searchModal.classList.remove('active');
+        //     }
+        // });
         
-        // Escで閉じる
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && searchModal.classList.contains('active')) {
-                searchModal.classList.remove('active');
-            }
-        });
+        // Escで閉じる動作は無効化（ユーザー要望）
+        // document.addEventListener('keydown', (e) => {
+        //     if (e.key === 'Escape' && searchModal.classList.contains('active')) {
+        //         searchModal.classList.remove('active');
+        //     }
+        // });
         
         // 保留中の条番号
         let pendingArticleNum = null;
