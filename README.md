@@ -22,29 +22,11 @@ Webページ上の法令参照（青い点線）にマウスを合わせると�
 
 ## インストール方法
 
-### 1. アイコンファイルの準備
+Chrome Web Storeからインストールできます（審査中）。
 
-SVGファイルをPNG形式に変換する必要があります。
-オンラインツール（例：https://svgtopng.com/）を使って：
-- `icon48.svg` → `icon48.png` (48x48)
-- `icon128.svg` → `icon128.png` (128x128)
-
-または、以下のPythonスクリプトで変換：
-
-```python
-# pip install cairosvg
-import cairosvg
-
-cairosvg.svg2png(url='icon48.svg', write_to='icon48.png', output_width=48, output_height=48)
-cairosvg.svg2png(url='icon128.svg', write_to='icon128.png', output_width=128, output_height=128)
-```
-
-### 2. Chromeに拡張機能をインストール
-
-1. Chromeで `chrome://extensions/` を開く
-2. 右上の「デベロッパーモード」をオンにする
-3. 「パッケージ化されていない拡張機能を読み込む」をクリック
-4. `chrome_extension` フォルダを選択
+<!-- 公開後にリンクを追加
+[Chrome Web Storeからインストール](https://chrome.google.com/webstore/detail/条文スタディ/EXTENSION_ID)
+-->
 
 ## 使い方
 
@@ -97,32 +79,28 @@ cairosvg.svg2png(url='icon128.svg', write_to='icon128.png', output_width=128, ou
 - その場合は内蔵のモックデータが表示されます
 - ポップアップ下部のリンクからe-Gov法令検索の全文を確認できます
 
-## ファイル構成
-
-```
-chrome_extension/
-├── manifest.json    # 拡張機能の設定
-├── law-data.js      # 法令ID・略称の定数データ
-├── cloze.js         # 穴埋め機能
-├── content.js       # メインのJavaScriptコード
-├── search.js        # 検索ページ用スクリプト
-├── styles.css       # スタイル定義
-├── icon16.png       # アイコン（16x16）
-├── icon48.png       # アイコン（48x48）
-├── icon128.png      # アイコン（128x128）
-└── README.md        # このファイル
-```
-
 ## 権限について
 
 この拡張機能は以下の権限を使用します：
 
 - **すべてのサイトへのアクセス (`<all_urls>`)**: 任意のWebページ上で法令参照を検出し、条文をポップアップ表示するために必要です
 - **e-Gov法令検索API (`https://laws.e-gov.go.jp/*`)**: 条文データを取得するために使用します
-- **ストレージ (`storage`)**: 設定を保存するために使用します
+- **ストレージ (`storage`)**: ユーザー設定を保存するために使用します（データは外部に送信されません）
 
-**プライバシーについて**: この拡張機能は閲覧データを外部に送信しません。条文取得のためにe-Gov法令検索APIにのみアクセスします。
+## プライバシーポリシー
+
+- この拡張機能は**個人情報を収集しません**
+- 閲覧履歴やユーザーデータを外部サーバーに送信することはありません
+- 条文データ取得のため、e-Gov法令検索API（https://laws.e-gov.go.jp/）にのみアクセスします
+
+詳細は [プライバシーポリシー](chrome_webstore/privacy_policy.md) をご覧ください。
+
+## フィードバック・不具合報告
+
+ご意見・ご要望・不具合報告は [Issues](https://github.com/ipscience/jyobun-study/issues) までお願いします。
 
 ## ライセンス
 
 MIT License
+
+Copyright (c) 2026 Hajime Kumami
