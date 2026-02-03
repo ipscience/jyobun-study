@@ -19,7 +19,7 @@ async function loadSettings() {
         enabledCheckbox.checked = result.enabled;
         excludedSitesTextarea.value = result.excludedSites;
     } catch (error) {
-        console.error('設定の読み込みに失敗しました:', error);
+        // 設定読み込みエラー（無視）
     }
 }
 
@@ -39,7 +39,6 @@ async function saveSettings() {
             saveStatus.classList.remove('visible');
         }, 2000);
     } catch (error) {
-        console.error('設定の保存に失敗しました:', error);
         alert('設定の保存に失敗しました');
     }
 }
