@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>条文スタディ - 設定</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 24px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        h1 {
+            font-size: 24px;
+            color: #1a73e8;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        h1 img {
+            width: 48px;
+            height: 48px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 24px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #202124;
+        }
+        
+        .option-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .option-row:last-child {
+            border-bottom: none;
+        }
+        
+        .option-label {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .option-label span:first-child {
+            font-weight: 500;
+        }
+        
+        .option-label span:last-child {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* トグルスイッチ */
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 24px;
+        }
+        
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+        
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+        
+        input:checked + .toggle-slider {
+            background-color: #1a73e8;
+        }
+        
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+        
+        /* 除外サイト */
+        .excluded-sites {
+            margin-top: 12px;
+        }
+        
+        .excluded-sites textarea {
+            width: 100%;
+            height: 100px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 13px;
+            resize: vertical;
+        }
+        
+        .excluded-sites textarea:focus {
+            outline: none;
+            border-color: #1a73e8;
+        }
+        
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+        }
+        
+        /* 保存ボタン */
+        .save-section {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .save-status {
+            font-size: 14px;
+            color: #34a853;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .save-status.visible {
+            opacity: 1;
+        }
+        
+        button {
+            background-color: #1a73e8;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        
+        button:hover {
+            background-color: #1557b0;
+        }
+        
+        button:active {
+            background-color: #104a9e;
+        }
+        
+        /* フッター */
+        .footer {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .footer a {
+            color: #1a73e8;
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <h1>
+        <img src="icon48.png" alt="アイコン">
+        条文スタディ
+    </h1>
+    <p class="subtitle">設定</p>
+    
+    <div class="section">
+        <div class="section-title">基本設定</div>
+        
+        <div class="option-row">
+            <div class="option-label">
+                <span>拡張機能を有効にする</span>
+                <span>オフにすると、すべてのサイトで条文ポップアップが無効になります</span>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" id="enabled" checked>
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+    </div>
+    
+    <div class="section">
+        <div class="section-title">除外サイト</div>
+        <p style="font-size: 14px; color: #666; margin-bottom: 12px;">
+            以下のサイトでは条文ポップアップを表示しません
+        </p>
+        <div class="excluded-sites">
+            <textarea id="excludedSites" placeholder="例:&#10;example.com&#10;*.google.com"></textarea>
+            <p class="help-text">
+                1行に1つのドメインを入力してください。<br>
+                ワイルドカード（*）を使用できます。例: *.example.com
+            </p>
+        </div>
+    </div>
+    
+    <div class="section save-section">
+        <span class="save-status" id="saveStatus">✓ 保存しました</span>
+        <button id="saveBtn">設定を保存</button>
+    </div>
+    
+    <div class="footer">
+        <p>法令データは <a href="https://laws.e-gov.go.jp/" target="_blank" rel="noopener noreferrer">e-Gov法令検索</a> から取得しています</p>
+        <p>バージョン 1.0</p>
+    </div>
+    
+    <script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>条文スタディ</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #1a237e, #3949ab);
+            color: white;
+            padding: 20px;
+        }
+        .header h1 {
+            margin: 0 0 15px 0;
+            font-size: 24px;
+        }
+        .search-box {
+            display: flex;
+            gap: 10px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
+        }
+        .search-input::placeholder {
+            color: #999;
+        }
+        .search-btn {
+            padding: 12px 24px;
+            background: #ff9800;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .search-btn:hover {
+            background: #f57c00;
+        }
+        .quick-links {
+            padding: 12px 20px;
+            background: #e8eaf6;
+            border-bottom: 1px solid #c5cae9;
+        }
+        .quick-links-title {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .quick-link-btns {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .quick-link {
+            padding: 6px 12px;
+            background: white;
+            border: 1px solid #c5cae9;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #3949ab;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .quick-link:hover {
+            background: #3949ab;
+            color: white;
+        }
+        .content {
+            padding: 20px;
+            min-height: 300px;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #3949ab;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .article-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1a237e;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e8eaf6;
+        }
+        .study-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0 15px 0;
+        }
+        .cloze-toggle {
+            padding: 6px 12px;
+            background: #3949ab;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .cloze-toggle:hover {
+            background: #303f9f;
+        }
+        .cloze-note {
+            font-size: 12px;
+            color: #666;
+        }
+        .article-content {
+            line-height: 1.8;
+            color: #333;
+        }
+        .article-content p {
+            margin: 10px 0;
+        }
+        .cloze {
+            padding: 0 2px;
+            border-bottom: 2px solid #666;
+            background: #f3f3f3;
+            border-radius: 2px;
+        }
+        .cloze-hidden {
+            color: #555;
+        }
+        .footer {
+            background: #f5f5f5;
+            padding: 15px 20px;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #e0e0e0;
+        }
+        .footer a {
+            color: #3949ab;
+        }
+        .no-match {
+            padding: 20px;
+            color: #666;
+        }
+        .no-match h3 {
+            color: #333;
+            margin-top: 0;
+        }
+        .no-match ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .no-match li {
+            margin: 5px 0;
+        }
+        .internal-link {
+            color: #1565c0;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .internal-link:hover {
+            color: #0d47a1;
+        }
+        .parentheses-content {
+            background-color: #e0e0e0;
+            padding: 0 2px;
+            border-radius: 2px;
+        }
+        .history-nav {
+            margin-bottom: 15px;
+        }
+        .history-nav button {
+            background: #e8eaf6;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #3949ab;
+        }
+        .history-nav button:hover {
+            background: #c5cae9;
+        }
+        .history-nav button:disabled {
+            background: #eee;
+            color: #999;
+            cursor: not-allowed;
+        }
+        .welcome {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+        .welcome-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .welcome h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .welcome p {
+            line-height: 1.6;
+        }
+        .select-law-prompt {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        .select-law-prompt .prompt-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .select-law-prompt h3 {
+            color: #1a237e;
+            margin: 0 0 10px 0;
+            font-size: 20px;
+        }
+        .select-law-prompt p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+        .select-law-prompt strong {
+            color: #333;
+        }
+        .law-select-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        .law-select-btn {
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #3949ab, #5c6bc0);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .law-select-btn:hover {
+            background: linear-gradient(135deg, #1a237e, #3949ab);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(57, 73, 171, 0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 条文スタディ</h1>
+            <div class="search-box">
+                <input type="text" id="search-input" class="search-input" 
+                       placeholder="例: 特許法29条、民法709条、著作権法2条1項" autofocus>
+                <button id="search-btn" class="search-btn">検索</button>
+            </div>
+        </div>
+        <div class="quick-links">
+            <div class="quick-links-title">よく使う法令</div>
+            <div class="quick-link-btns">
+                <button class="quick-link" data-law="特許法">特許法</button>
+                <button class="quick-link" data-law="実用新案法">実用新案法</button>
+                <button class="quick-link" data-law="意匠法">意匠法</button>
+                <button class="quick-link" data-law="商標法">商標法</button>
+                <button class="quick-link" data-law="著作権法">著作権法</button>
+                <button class="quick-link" data-law="不正競争防止法">不競法</button>
+                <button class="quick-link" data-law="憲法">憲法</button>
+                <button class="quick-link" data-law="民法">民法</button>
+                <button class="quick-link" data-law="商法">商法</button>
+                <button class="quick-link" data-law="民事訴訟法">民訴法</button>
+                <button class="quick-link" data-law="刑事訴訟法">刑訴法</button>
+            </div>
+        </div>
+        <div class="content">
+            <div class="history-nav">
+                <button id="back-btn" disabled>◀ 戻る</button>
+            </div>
+            <div id="result">
+                <div class="welcome">
+                    <div class="welcome-icon">📖</div>
+                    <h2>条文を検索</h2>
+                    <p>上の検索ボックスに法令参照を入力してください。<br>
+                    例：「特許法29条」「民法第709条」「著作権法2条1項」</p>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            出典：<a href="https://laws.e-gov.go.jp/" target="_blank" rel="noopener noreferrer">e-Gov法令検索</a>
+        </div>
+    </div>
+    <script src="law-data.js"></script>
+    <script src="cloze.js"></script>
+    <script src="search.js"></script>
+</body>
+</html>
