@@ -61,7 +61,7 @@
             </div>
             <div class="popup-content"></div>
             <div class="popup-footer">
-                出典：<a href="https://laws.e-gov.go.jp/" target="_blank" rel="noopener noreferrer">e-Gov法令検索</a>
+                © 2026 Hajime Kumami｜出典：<a href="https://laws.e-gov.go.jp/" target="_blank" rel="noopener noreferrer">e-Gov法令検索</a>
             </div>
         `;
         document.body.appendChild(popup);
@@ -1380,7 +1380,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        出典：<a href="https://laws.e-gov.go.jp/" target="_blank">e-Gov法令検索</a>
+                        © 2026 Hajime Kumami｜出典：<a href="https://laws.e-gov.go.jp/" target="_blank">e-Gov法令検索</a>
                     </div>
                 </div>
             </div>
@@ -1519,6 +1519,9 @@
         // 閉じるボタン
         closeBtn.addEventListener('click', () => {
             searchModal.classList.remove('active');
+            // フローティングボタンを再表示
+            const floatingBtn = document.getElementById('jyobun-floating-btn');
+            if (floatingBtn) floatingBtn.style.setProperty('display', 'block', 'important');
         });
         
         // 背景クリックで閉じる動作は無効化（ユーザー要望）
@@ -1692,6 +1695,10 @@
         
         searchInput.value = initialQuery;
         searchModal.classList.add('active');
+        
+        // フローティングボタンを非表示
+        const floatingBtn = document.getElementById('jyobun-floating-btn');
+        if (floatingBtn) floatingBtn.style.setProperty('display', 'none', 'important');
         
         // フォーカスを検索ボックスに
         setTimeout(() => searchInput.focus(), 100);
