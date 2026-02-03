@@ -207,7 +207,7 @@ chrome_extension/
 
 以下を確認してください：
 1. インターネットに接続されていますか？
-2. e-Gov法令検索（https://laws.e-gov.go.jp/）にアクセスできますか？
+2. [e-Gov法令検索](https://laws.e-gov.go.jp/)にアクセスできますか？
 3. 拡張機能が有効になっていますか？（`chrome://extensions` で確認）
 </details>
 
