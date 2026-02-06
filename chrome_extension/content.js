@@ -1162,8 +1162,8 @@
     }
 
 
-    // モックデータ
-    function getMockArticle(lawName, articleNum, lawId) {
+    // モックデータ（API失敗時のフォールバック）
+    function getMockArticle(lawName, articleNum, lawId, paragraphNum, itemNum) {
         const mockData = {
             '特許法第1条': `<strong>（目的）</strong>
                 <p>この法律は、発明の保護及び利用を図ることにより、発明を奨励し、もつて産業の発達に寄与することを目的とする。</p>`,
@@ -1225,7 +1225,10 @@
                 <p style="color: #666;">e-Gov法令検索で直接ご確認ください。</p>`;
         }
 
-        content += getLawLink(lawId);
+        // e-Gov法令検索へのリンクを追加
+        if (lawId) {
+            content += `<p style="margin-top: 12px; font-size: 12px;"><a href="https://laws.e-gov.go.jp/law/${lawId}" target="_blank" rel="noopener noreferrer" style="color: #1a73e8;">e-Gov法令検索で全文を見る →</a></p>`;
+        }
         return content;
     }
 
@@ -1821,8 +1824,8 @@
             const text = message.text;
             const parsed = parseLawReferenceFromText(text);
             if (parsed) {
-                // ポップアップを表示
-                showPopup(parsed.lawName, parsed.articleNum);
+                // 検索モーダルを開いて条文を表示
+                openSearchModal(parsed.lawName + parsed.articleNum);
             }
         }
         
