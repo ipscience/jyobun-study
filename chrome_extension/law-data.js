@@ -62,3 +62,36 @@ window.JyobunStudy.CLOZE_PREDICATE_PATTERNS = [
 const LAW_IDS = window.JyobunStudy.LAW_IDS;
 const LAW_ABBREVIATIONS = window.JyobunStudy.LAW_ABBREVIATIONS;
 const CLOZE_PREDICATE_PATTERNS = window.JyobunStudy.CLOZE_PREDICATE_PATTERNS;
+
+// 各法令の最終条番号（条文一覧表示用）
+window.JyobunStudy.LAW_ARTICLE_COUNTS = {
+    '特許法': 204,
+    '実用新案法': 61,
+    '意匠法': 77,
+    '商標法': 91,
+    '著作権法': 124,
+    '不正競争防止法': 22,
+    '憲法': 103,
+    '日本国憲法': 103,
+    '民法': 1050,
+    '商法': 851,
+    '民事訴訟法': 405,
+    '刑事訴訟法': 507,
+    '会社法': 979,
+    '刑法': 264,
+    '労働基準法': 121,
+    '独占禁止法': 100,
+    '個人情報保護法': 185,
+    '消費者契約法': 13,
+    '行政手続法': 46,
+    '行政事件訴訟法': 46,
+    '国家賠償法': 6,
+    '破産法': 277,
+    '金融商品取引法': 227,
+    '景品表示法': 53,
+    '製造物責任法': 6,
+    '電子署名法': 47,
+    '種苗法': 72,
+    '半導体集積回路法': 36,
+};
+const LAW_ARTICLE_COUNTS = window.JyobunStudy.LAW_ARTICLE_COUNTS;

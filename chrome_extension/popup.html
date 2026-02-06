@@ -194,6 +194,15 @@
         .internal-link:hover {
             color: #0d47a1;
         }
+        .cloze {
+            padding: 0 2px;
+            border-bottom: 2px solid #666;
+            background: #f3f3f3;
+            border-radius: 2px;
+        }
+        .cloze-hidden {
+            color: #555;
+        }
         .nav-bar {
             display: flex;
             gap: 8px;
@@ -350,10 +359,11 @@
     </div>
     
     <div class="footer">
-        出典：<a href="https://laws.e-gov.go.jp/" target="_blank">e-Gov法令検索</a>
+        出典：<a href="https://laws.e-gov.go.jp/" target="_blank" rel="noopener noreferrer">e-Gov法令検索</a>
     </div>
     
     <script src="law-data.js"></script>
+    <script src="cloze.js"></script>
     <script src="popup.js"></script>
 </body>
 </html>

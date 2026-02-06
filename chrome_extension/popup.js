@@ -1,6 +1,13 @@
 // 条文スタディ - ポップアップスクリプト
 'use strict';
 
+// HTMLエスケープ（XSS対策）
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+}
+
 // law-data.js で定義された LAW_IDS, LAW_ABBREVIATIONS を使用
 
 // キャッシュと履歴
@@ -198,11 +205,11 @@ function parseArticleXml(xmlText, lawName) {
         const articleTitle = article.querySelector('ArticleTitle');
         
         if (articleCaption) {
-            html += `<div style="color:#666;font-size:12px;margin-bottom:4px;">（${articleCaption.textContent}）</div>`;
+            html += `<div style="color:#666;font-size:12px;margin-bottom:4px;">（${escapeHtml(articleCaption.textContent)}）</div>`;
         }
         
         if (articleTitle) {
-            html += `<div style="font-weight:bold;margin-bottom:8px;">${articleTitle.textContent}</div>`;
+            html += `<div style="font-weight:bold;margin-bottom:8px;">${escapeHtml(articleTitle.textContent)}</div>`;
         }
         
         const paragraphs = article.querySelectorAll(':scope > Paragraph');
@@ -212,7 +219,7 @@ function parseArticleXml(xmlText, lawName) {
             
             let paraHtml = '<p>';
             if (paraNum && paraNum.textContent) {
-                paraHtml += `<strong>${paraNum.textContent}</strong>　`;
+                paraHtml += `<strong>${escapeHtml(paraNum.textContent)}</strong>　`;
             }
             if (paraSentence) {
                 paraHtml += processXmlContent(paraSentence, lawName);
@@ -229,7 +236,7 @@ function parseArticleXml(xmlText, lawName) {
                     
                     let itemHtml = '<div class="item">';
                     if (itemTitle) {
-                        itemHtml += `<span class="item-title">${itemTitle.textContent}</span>　`;
+                        itemHtml += `<span class="item-title">${escapeHtml(itemTitle.textContent)}</span>　`;
                     }
                     if (itemSentence) {
                         itemHtml += processXmlContent(itemSentence, lawName);
@@ -324,7 +331,8 @@ async function displayArticle(lawName, articleNum, addToHistory = true) {
         
         contentDiv.innerHTML = `
             ${navHtml}
-            <div class="article-title">${lawName} ${result.title || articleNum}</div>
+            <div class="article-title">${escapeHtml(lawName)} ${escapeHtml(result.title || articleNum)}</div>
+            <div style="margin: 6px 0 10px 0;"><button class="nav-btn" id="cloze-btn">穴埋め</button></div>
             <div class="article-content">${result.content}</div>
             <button class="open-tab-btn" id="open-tab-btn">📄 新しいタブで開く</button>
         `;
@@ -338,6 +346,22 @@ async function displayArticle(lawName, articleNum, addToHistory = true) {
                     const prev = history[currentIndex];
                     displayArticle(prev.lawName, prev.articleNum, false);
                 }
+            });
+        }
+        
+        // 穴埋めボタン
+        const clozeBtn = document.getElementById('cloze-btn');
+        const articleContent = contentDiv.querySelector('.article-content');
+        if (clozeBtn && articleContent && typeof applyCloze === 'function') {
+            clozeBtn.addEventListener('click', () => {
+                if (articleContent.querySelectorAll('.cloze').length === 0) {
+                    applyCloze(articleContent, true);
+                    clozeBtn.textContent = '答え表示';
+                    return;
+                }
+                const hasHidden = articleContent.querySelector('.cloze-hidden') !== null;
+                setClozeHidden(articleContent, !hasHidden);
+                clozeBtn.textContent = hasHidden ? '穴埋め' : '答え表示';
             });
         }
         
@@ -370,5 +394,5 @@ function showLoading() {
 
 // エラー表示
 function showError(message) {
-    contentDiv.innerHTML = `<div class="error">${message}</div>`;
+    contentDiv.innerHTML = `<div class="error">${escapeHtml(message)}</div>`;
 }

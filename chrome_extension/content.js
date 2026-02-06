@@ -15,17 +15,50 @@
         'g'
     );
 
+    // HTMLエスケープ（XSS対策）
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.appendChild(document.createTextNode(str));
+        return div.innerHTML;
+    }
+
     // 条文キャッシュ（上限100件、LRU方式）
     const CACHE_MAX_SIZE = 100;
     const articleCache = {};
     const cacheOrder = [];  // LRU追跡用
+    const articleIndexCache = {};  // 条文一覧キャッシュ（法令名 → [{title, caption, display, articleRef}]）
+    const lawXmlDocCache = {};  // 法令全文パース済みXMLキャッシュ（法令名 → Document）
+
+    // chrome.storage.local 永続キャッシュ（TTL: 7日、拡張機能専用で安全）
+    const STORAGE_TTL = 7 * 24 * 60 * 60 * 1000;
+    const STORAGE_PREFIX = 'jyobun_';
+
+    async function getStoredCache(key) {
+        try {
+            const result = await chrome.storage.local.get(STORAGE_PREFIX + key);
+            const raw = result[STORAGE_PREFIX + key];
+            if (!raw) return null;
+            if (Date.now() - raw.ts > STORAGE_TTL) {
+                chrome.storage.local.remove(STORAGE_PREFIX + key);
+                return null;
+            }
+            return raw.data;
+        } catch { return null; }
+    }
+
+    function setStoredCache(key, data) {
+        try {
+            chrome.storage.local.set({ [STORAGE_PREFIX + key]: { data, ts: Date.now() } });
+        } catch { /* quota exceeded */ }
+    }
 
     function addToCache(key, value) {
         if (articleCache[key]) {
-            // 既存キーを最新に移動
+            // 既存キーを最新に移動し、値も更新
             const idx = cacheOrder.indexOf(key);
             if (idx > -1) cacheOrder.splice(idx, 1);
             cacheOrder.push(key);
+            articleCache[key] = value;
             return;
         }
         // 上限超過時は最古を削除
@@ -35,6 +68,8 @@
         }
         articleCache[key] = value;
         cacheOrder.push(key);
+        // localStorageにも保存
+        setStoredCache('art_' + key, value);
     }
 
     // ポップアップ要素を作成
@@ -179,7 +214,7 @@
             const clozeBtn = popup.querySelector('.popup-cloze');
             if (clozeBtn) clozeBtn.textContent = '穴埋め';
         } catch (error) {
-            content.innerHTML = `<div class="popup-error">条文の取得に失敗しました: ${error.message}</div>`;
+            content.innerHTML = `<div class="popup-error">条文の取得に失敗しました: ${escapeHtml(error.message)}</div>`;
         }
     }
     
@@ -539,19 +574,6 @@
         return String(num);
     }
     
-    // 完全な参照文字列を構築（条文 + 項・号）
-    function buildFullRef(targetArticle, matchText) {
-        // matchTextから項・号を抽出してtargetArticleに追加
-        const paraMatch = matchText.match(/第[一二三四五六七八九十0-9０-９]+項/);
-        const itemMatch = matchText.match(/第[一二三四五六七八九十0-9０-９]+号/);
-        
-        let fullRef = targetArticle;
-        if (paraMatch) fullRef += paraMatch[0];
-        if (itemMatch) fullRef += itemMatch[0];
-        
-        return fullRef;
-    }
-    
     // 文脈を考慮した完全な参照文字列を構築
     function buildFullRefWithContext(targetArticle, matchText, contextParagraph) {
         // matchTextに項が含まれていればそれを使用、なければ文脈から取得
@@ -633,24 +655,6 @@
         return false;
     }
     
-    // 文字列が括弧内にあるかどうかを判定
-    function isInsideParentheses(textBefore) {
-        // 開き括弧と閉じ括弧の数をカウント（全角・半角両方）
-        const openCount = (textBefore.match(/[（(]/g) || []).length;
-        const closeCount = (textBefore.match(/[）)]/g) || []).length;
-        // 開き括弧が閉じ括弧より多ければ、括弧内にいる
-        return openCount > closeCount;
-    }
-    
-    // 文字列が鉤括弧内にあるかどうかを判定（読み替え規定など）
-    function isInsideQuotes(textBefore) {
-        // 開き鉤括弧と閉じ鉤括弧の数をカウント
-        const openCount = (textBefore.match(/「/g) || []).length;
-        const closeCount = (textBefore.match(/」/g) || []).length;
-        // 開き鉤括弧が閉じ鉤括弧より多ければ、鉤括弧内にいる
-        return openCount > closeCount;
-    }
-
     // テキストノードを処理して法令参照をマークアップ
     function processTextNode(textNode) {
         const text = textNode.textContent;
@@ -870,17 +874,21 @@
         return doc.body.innerHTML;
     }
 
+    // ポップアップ内法令参照パターン（事前コンパイル・再利用）
+    const POPUP_LAW_PATTERN = new RegExp(
+        `(${LAW_NAMES}|${LAW_ABBREVS})(第?[一二三四五六七八九十百千0-9０-９]+条(?:の[一二三四五六七八九十0-9０-９]+)?(?:第?[一二三四五六七八九十0-9０-９]+項)?(?:第?[一二三四五六七八九十0-9０-９]+号)?)`,
+        'g'
+    );
+
     // ポップアップ内の法令参照をオフラインで処理（DOMに追加する前）
     function processPopupContentOffline(htmlString) {
         // 一時的なDIV要素を作成（DOMには追加しない）
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = htmlString;
         
-        // ポップアップ内用に新しい正規表現を作成（グローバルフラグの lastIndex 問題を回避）
-        const popupLawPattern = new RegExp(
-            `(${LAW_NAMES}|${LAW_ABBREVS})(第?[一二三四五六七八九十百千0-9０-９]+条(?:の[一二三四五六七八九十0-9０-９]+)?(?:第?[一二三四五六七八九十0-9０-９]+項)?(?:第?[一二三四五六七八九十0-9０-９]+号)?)`,
-            'g'
-        );
+        // 事前コンパイル済みパターンを使用（lastIndexをリセットして再利用）
+        const popupLawPattern = POPUP_LAW_PATTERN;
+        popupLawPattern.lastIndex = 0;
         
         // テキストノードを収集
         const walker = document.createTreeWalker(
@@ -986,7 +994,6 @@
         return `https://laws.e-gov.go.jp/law/${lawId}#MP-At_${articleAnchor}`;
     }
 
-    // マウスリーブ時の処理
     // 漢数字を数字に変換
     function convertToNumber(str) {
         const kanjiNums = {
@@ -1025,6 +1032,14 @@
         return result + temp;
     }
 
+    // 条文参照を正規化（「第」の有無・漢数字・全角数字の表記揺れを吸収）
+    function normalizeArticleRef(ref) {
+        let n = ref.replace(/^\s*第?\s*/, '第');
+        n = n.replace(/[０-９]/g, s => String.fromCharCode(s.charCodeAt(0) - 0xFEE0));
+        n = n.replace(/[一二三四五六七八九十百千]+/g, m => String(convertToNumber(m)));
+        return n;
+    }
+
     // e-Gov APIから条文を取得
     async function fetchArticle(lawName, articleNum) {
         // 略称を正式名称に変換
@@ -1032,7 +1047,7 @@
         
         const cacheKey = `${fullLawName}${articleNum}`;
 
-        // キャッシュを確認
+        // メモリキャッシュを確認
         if (articleCache[cacheKey]) {
             return articleCache[cacheKey];
         }
@@ -1042,21 +1057,44 @@
             throw new Error(`${lawName}の法令IDが登録されていません`);
         }
 
-
-        // 条番号を変換（「第」は省略可能、号にも対応）
-        const articleNumMatch = articleNum.match(/第?([一二三四五六七八九十百千0-9０-９]+)条(?:の([一二三四五六七八九十0-9０-９]+))?(?:第?([一二三四五六七八九十0-9０-９]+)項)?(?:第?([一二三四五六七八九十0-9０-９]+)号)?/);
+        // 条番号を変換（「第」は省略可能、枝番・項・号にも対応）
+        const articleNumMatch = articleNum.match(/第?([一二三四五六七八九十百千0-9０-９]+)条((?:の[一二三四五六七八九十0-9０-９]+)*)?(?:第?([一二三四五六七八九十0-9０-９]+)項)?(?:第?([一二三四五六七八九十0-9０-９]+)号)?/);
         if (!articleNumMatch) {
             throw new Error('条番号の解析に失敗しました');
         }
 
         const mainNum = convertToNumber(articleNumMatch[1]);
-        const subNum = articleNumMatch[2] ? convertToNumber(articleNumMatch[2]) : null;
+        // 枝番を解析（"の2の3" → [2, 3]）
+        let subNums = [];
+        if (articleNumMatch[2]) {
+            const subParts = articleNumMatch[2].match(/の([一二三四五六七八九十0-9０-９]+)/g);
+            if (subParts) {
+                subNums = subParts.map(p => convertToNumber(p.slice(1)));
+            }
+        }
         const paragraphNum = articleNumMatch[3] ? convertToNumber(articleNumMatch[3]) : null;
         const itemNum = articleNumMatch[4] ? convertToNumber(articleNumMatch[4]) : null;
+        const articleParam = [mainNum, ...subNums].join('_');
+
+        // パース済みXMLキャッシュがあればそこから抽出（同期・最速）
+        if (lawXmlDocCache[fullLawName]) {
+            const result = extractArticleFromXmlDoc(lawXmlDocCache[fullLawName], articleParam, fullLawName, articleNum, lawId, paragraphNum, itemNum);
+            if (result) {
+                addToCache(cacheKey, result);
+                return result;
+            }
+        }
+
+        // chrome.storage永続キャッシュを確認（全文XMLがない場合のみ）
+        const stored = await getStoredCache('art_' + cacheKey);
+        if (stored) {
+            addToCache(cacheKey, stored);
+            return stored;
+        }
 
         try {
-            // e-Gov API呼び出し
-            const apiUrl = `https://laws.e-gov.go.jp/api/1/articles;lawId=${lawId};article=${mainNum}${subNum ? `_${subNum}` : ''}`;
+            // e-Gov API呼び出し（枝番はアンダースコア区切り: article=6_2_2）
+            const apiUrl = `https://laws.e-gov.go.jp/api/1/articles;lawId=${lawId};article=${articleParam}`;
             
             const response = await fetch(apiUrl);
             
@@ -1074,7 +1112,99 @@
         }
     }
 
-    // XMLをパース
+    // パース済みXML Documentから特定条文を抽出（再パース不要・高速）
+    function extractArticleFromXmlDoc(xmlDoc, articleParam, lawName, articleNum, lawId, highlightParagraph, highlightItem) {
+        try {
+            const allArticles = xmlDoc.querySelectorAll('MainProvision Article');
+            let targetArticle = null;
+            for (const article of allArticles) {
+                const titleElem = article.querySelector('ArticleTitle');
+                if (!titleElem) continue;
+                const title = titleElem.textContent.trim();
+                const match = title.match(/第(.+?)条((?:の[^の]+)*)/);
+                if (!match) continue;
+                const mainNum = String(convertToNumber(match[1]));
+                const parts = [mainNum];
+                if (match[2]) {
+                    const subParts = match[2].match(/の([^の]+)/g);
+                    if (subParts) {
+                        parts.push(...subParts.map(p => String(convertToNumber(p.slice(1)))));
+                    }
+                }
+                if (parts.join('_') === articleParam) {
+                    targetArticle = article;
+                    break;
+                }
+            }
+            if (!targetArticle) return null;
+            // DOM要素を直接処理（シリアライズ・再パース不要）
+            return processArticleElement(targetArticle, highlightParagraph, highlightItem);
+        } catch {
+            return null;
+        }
+    }
+
+    // Article DOM要素からHTMLを生成（シリアライズ/パースの往復を排除）
+    function processArticleElement(article, highlightParagraph, highlightItem) {
+        let content = '';
+        let paragraphIndex = 0;
+
+        const caption = article.getElementsByTagName('ArticleCaption')[0];
+        if (caption) {
+            content += `<strong>${caption.textContent}</strong>`;
+        }
+
+        const paragraphs = article.getElementsByTagName('Paragraph');
+        for (let para of paragraphs) {
+            paragraphIndex++;
+            const paragraphNumElem = para.getElementsByTagName('ParagraphNum')[0];
+            const numText = paragraphNumElem ? paragraphNumElem.textContent : '';
+            const isParaHighlighted = highlightParagraph && paragraphIndex === highlightParagraph;
+            const paraHighlightStyle = isParaHighlighted && !highlightItem
+                ? 'background-color: #fff3cd; border-left: 3px solid #ffc107; padding-left: 8px; margin-left: -11px;'
+                : '';
+
+            const sentences = para.getElementsByTagName('ParagraphSentence')[0];
+            let sentenceText = '';
+            if (sentences) {
+                const sentenceElements = sentences.getElementsByTagName('Sentence');
+                for (let sent of sentenceElements) {
+                    sentenceText += sent.textContent;
+                }
+            }
+            if (sentenceText) {
+                content += `<p style="${paraHighlightStyle}">${numText}　${sentenceText}</p>`;
+            }
+
+            const items = para.getElementsByTagName('Item');
+            let itemIndex = 0;
+            for (let item of items) {
+                itemIndex++;
+                const itemTitle = item.getElementsByTagName('ItemTitle')[0];
+                const itemSentence = item.getElementsByTagName('ItemSentence')[0];
+                let itemText = '';
+                if (itemTitle) {
+                    itemText += itemTitle.textContent + '　';
+                }
+                if (itemSentence) {
+                    const itemSentElements = itemSentence.getElementsByTagName('Sentence');
+                    for (let sent of itemSentElements) {
+                        itemText += sent.textContent;
+                    }
+                }
+                if (itemText) {
+                    const isItemHighlighted = isParaHighlighted && highlightItem && itemIndex === highlightItem;
+                    const itemHighlightStyle = isItemHighlighted
+                        ? 'margin-left: 1.5em; background-color: #fff3cd; border-left: 3px solid #ffc107; padding-left: 8px;'
+                        : (isParaHighlighted && !highlightItem ? 'margin-left: 1.5em; background-color: #fff3cd;' : 'margin-left: 1.5em;');
+                    content += `<p style="${itemHighlightStyle}">${itemText}</p>`;
+                }
+            }
+        }
+        return content;
+    }
+
+    // XMLをパース（processArticleElementに委譲）
     function parseArticleXml(xmlText, lawName, articleNum, lawId, highlightParagraph, highlightItem) {
         try {
             const parser = new DOMParser();
@@ -1086,75 +1216,9 @@
             }
 
             let content = '';
-            let paragraphIndex = 0;
-            
-            for (let article of articles) {
-                // 条見出し（例：（特許を受ける権利））
-                const caption = article.getElementsByTagName('ArticleCaption')[0];
-                if (caption) {
-                    content += `<strong>${caption.textContent}</strong>`;
-                }
-
-                // 各項を処理
-                const paragraphs = article.getElementsByTagName('Paragraph');
-                for (let para of paragraphs) {
-                    paragraphIndex++;
-                    
-                    // 項番号を取得（例：２、３など）
-                    const paragraphNumElem = para.getElementsByTagName('ParagraphNum')[0];
-                    const numText = paragraphNumElem ? paragraphNumElem.textContent : '';
-                    
-                    // 指定された項かどうかを判定（ハイライト用）
-                    const isParaHighlighted = highlightParagraph && paragraphIndex === highlightParagraph;
-                    const paraHighlightStyle = isParaHighlighted && !highlightItem
-                        ? 'background-color: #fff3cd; border-left: 3px solid #ffc107; padding-left: 8px; margin-left: -11px;' 
-                        : '';
-                    
-                    // 項の文を全て取得（複数のSentence要素がある場合）
-                    const sentences = para.getElementsByTagName('ParagraphSentence')[0];
-                    let sentenceText = '';
-                    if (sentences) {
-                        const sentenceElements = sentences.getElementsByTagName('Sentence');
-                        for (let sent of sentenceElements) {
-                            sentenceText += sent.textContent;
-                        }
-                    }
-                    
-                    if (sentenceText) {
-                        content += `<p style="${paraHighlightStyle}">${numText}　${sentenceText}</p>`;
-                    }
-                    
-                    // 号（Item）を処理
-                    const items = para.getElementsByTagName('Item');
-                    let itemIndex = 0;
-                    for (let item of items) {
-                        itemIndex++;
-                        const itemTitle = item.getElementsByTagName('ItemTitle')[0];
-                        const itemSentence = item.getElementsByTagName('ItemSentence')[0];
-                        
-                        let itemText = '';
-                        if (itemTitle) {
-                            itemText += itemTitle.textContent + '　';
-                        }
-                        if (itemSentence) {
-                            const itemSentElements = itemSentence.getElementsByTagName('Sentence');
-                            for (let sent of itemSentElements) {
-                                itemText += sent.textContent;
-                            }
-                        }
-                        
-                        if (itemText) {
-                            // 号のハイライト判定（項も一致している必要がある）
-                            const isItemHighlighted = isParaHighlighted && highlightItem && itemIndex === highlightItem;
-                            const itemHighlightStyle = isItemHighlighted
-                                ? 'margin-left: 1.5em; background-color: #fff3cd; border-left: 3px solid #ffc107; padding-left: 8px;'
-                                : (isParaHighlighted && !highlightItem ? 'margin-left: 1.5em; background-color: #fff3cd;' : 'margin-left: 1.5em;');
-                            content += `<p style="${itemHighlightStyle}">${itemText}</p>`;
-                        }
-                    }
-                }
+            for (const article of articles) {
+                content += processArticleElement(article, highlightParagraph, highlightItem);
             }
-
             return content;
         } catch (error) {
             throw new Error('XMLの解析に失敗しました');
@@ -1234,24 +1298,43 @@
 
     // MutationObserverで動的コンテンツも処理
     function observeDOM() {
+        // 除外すべきタグ名のセット
+        const EXCLUDED_TAGS = new Set([
+            'SCRIPT', 'STYLE', 'TEXTAREA', 'INPUT', 'NOSCRIPT', 'IFRAME'
+        ]);
+        
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 mutation.addedNodes.forEach((node) => {
                     if (node.nodeType === Node.ELEMENT_NODE) {
+                        // ポップアップやモーダル内の要素は除外
+                        if (node.id === 'law-popup-container' || 
+                            node.id === 'jyobun-search-modal' ||
+                            node.id === 'jyobun-floating-btn' ||
+                            node.closest('#law-popup-container') ||
+                            node.closest('#jyobun-search-modal')) {
+                            return;
+                        }
+                        
                         // 新しく追加された要素内のテキストノードを処理
                         const walker = document.createTreeWalker(
                             node,
                             NodeFilter.SHOW_TEXT,
-                            null
+                            {
+                                acceptNode: function(textNode) {
+                                    const parent = textNode.parentNode;
+                                    if (!parent) return NodeFilter.FILTER_REJECT;
+                                    if (EXCLUDED_TAGS.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
+                                    if (parent.classList && parent.classList.contains('law-ref-highlight')) return NodeFilter.FILTER_REJECT;
+                                    if (!textNode.textContent.trim()) return NodeFilter.FILTER_REJECT;
+                                    return NodeFilter.FILTER_ACCEPT;
+                                }
+                            }
                         );
                         const textNodes = [];
                         let textNode;
                         while (textNode = walker.nextNode()) {
-                            if (textNode.parentNode.tagName !== 'SCRIPT' &&
-                                textNode.parentNode.tagName !== 'STYLE' &&
-                                !textNode.parentNode.classList.contains('law-ref-highlight')) {
-                                textNodes.push(textNode);
-                            }
+                            textNodes.push(textNode);
                         }
                         textNodes.forEach(processTextNode);
                     }
@@ -1364,17 +1447,18 @@
                         <button class="search-btn">検索</button>
                     </div>
                     <div class="quick-links">
-                        <button class="quick-link" data-law="特許法">特許法</button>
-                        <button class="quick-link" data-law="実用新案法">実用新案法</button>
-                        <button class="quick-link" data-law="意匠法">意匠法</button>
-                        <button class="quick-link" data-law="商標法">商標法</button>
-                        <button class="quick-link" data-law="著作権法">著作権法</button>
-                        <button class="quick-link" data-law="不正競争防止法">不競法</button>
-                        <button class="quick-link" data-law="憲法">憲法</button>
-                        <button class="quick-link" data-law="民法">民法</button>
-                        <button class="quick-link" data-law="商法">商法</button>
-                        <button class="quick-link" data-law="民事訴訟法">民訴法</button>
-                        <button class="quick-link" data-law="刑事訴訟法">刑訴法</button>
+                        <div class="quick-link-wrap"><button class="quick-link" data-law="特許法">特許法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        <div class="quick-link-wrap"><button class="quick-link" data-law="実用新案法">実用新案法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        <div class="quick-link-wrap"><button class="quick-link" data-law="意匠法">意匠法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        <div class="quick-link-wrap"><button class="quick-link" data-law="商標法">商標法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        <div class="quick-link-wrap"><button class="quick-link" data-law="著作権法">著作権法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        <div class="quick-link-wrap"><button class="quick-link" data-law="不正競争防止法">不競法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        <div class="quick-link-wrap"><button class="quick-link" data-law="憲法">憲法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        <div class="quick-link-wrap"><button class="quick-link" data-law="民法">民法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        <div class="quick-link-wrap"><button class="quick-link" data-law="刑法">刑法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        <div class="quick-link-wrap"><button class="quick-link" data-law="商法">商法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        <div class="quick-link-wrap"><button class="quick-link" data-law="民事訴訟法">民訴法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        <div class="quick-link-wrap"><button class="quick-link" data-law="刑事訴訟法">刑訴法 ▾</button><div class="quick-link-dropdown"></div></div>
                     </div>
                     <div class="modal-body">
                         <div class="welcome">
@@ -1527,20 +1611,6 @@
             if (floatingBtn) floatingBtn.style.setProperty('display', 'block', 'important');
         });
         
-        // 背景クリックで閉じる動作は無効化（ユーザー要望）
-        // searchModal.addEventListener('click', (e) => {
-        //     if (e.target === searchModal) {
-        //         searchModal.classList.remove('active');
-        //     }
-        // });
-        
-        // Escで閉じる動作は無効化（ユーザー要望）
-        // document.addEventListener('keydown', (e) => {
-        //     if (e.key === 'Escape' && searchModal.classList.contains('active')) {
-        //         searchModal.classList.remove('active');
-        //     }
-        // });
-        
         // 保留中の条番号
         let pendingArticleNum = null;
         
@@ -1614,32 +1684,206 @@
             if (e.key === 'Enter') doModalSearch();
         });
         
-        // クイックリンク
+        // クイックリンク — ドロップダウンで条文一覧を表示
         searchModal.querySelectorAll('.quick-link').forEach(btn => {
-            btn.addEventListener('click', () => {
-                // 保留中の条番号があればそれを使用
+            btn.addEventListener('click', async () => {
+                const lawName = btn.dataset.law;
+                // 保留中の条番号があればそれを使って検索
                 if (pendingArticleNum) {
-                    searchInput.value = btn.dataset.law + pendingArticleNum;
+                    searchInput.value = lawName + pendingArticleNum;
                     pendingArticleNum = null;
-                } else {
-                    searchInput.value = btn.dataset.law + '第1条';
+                    doModalSearch();
+                    return;
                 }
-                doModalSearch();
+
+                const wrap = btn.closest('.quick-link-wrap');
+                const dropdown = wrap.querySelector('.quick-link-dropdown');
+
+                // 同じボタンのドロップダウンが開いていれば閉じる
+                if (dropdown.classList.contains('open')) {
+                    dropdown.classList.remove('open');
+                    btn.classList.remove('active');
+                    return;
+                }
+
+                // 他のドロップダウンを閉じる
+                searchModal.querySelectorAll('.quick-link-dropdown.open').forEach(d => d.classList.remove('open'));
+                searchModal.querySelectorAll('.quick-link.active').forEach(b => b.classList.remove('active'));
+
+                const fullLawName = LAW_ABBREVIATIONS[lawName] || lawName;
+
+                // キャッシュがなければ読み込み中を表示
+                if (!articleIndexCache[fullLawName]) {
+                    dropdown.innerHTML = '<div class="quick-link-dropdown-loading">読み込み中...</div>';
+                    dropdown.classList.add('open');
+                    btn.classList.add('active');
+                }
+
+                const index = await fetchArticleIndex(fullLawName);
+                if (!index) {
+                    dropdown.innerHTML = '<div class="quick-link-dropdown-loading">取得できませんでした</div>';
+                    dropdown.classList.add('open');
+                    btn.classList.add('active');
+                    return;
+                }
+
+                // ドロップダウン項目を構築
+                let items = '';
+                for (const item of index) {
+                    const caption = item.caption ? ` ${item.caption}` : '';
+                    items += `<div class="quick-link-dropdown-item" data-law="${escapeHtml(fullLawName)}" data-article="${escapeHtml(item.articleRef)}">${escapeHtml(item.display)}${escapeHtml(caption)}</div>`;
+                }
+                dropdown.innerHTML = items;
+                dropdown.classList.add('open');
+                btn.classList.add('active');
+
+                // 項目クリックで条文表示
+                dropdown.querySelectorAll('.quick-link-dropdown-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const law = item.dataset.law;
+                        const article = item.dataset.article;
+                        searchInput.value = law + article;
+                        dropdown.classList.remove('open');
+                        btn.classList.remove('active');
+                        showModalResult(law, article, modalBody);
+                    });
+                });
             });
         });
+
+        // ドロップダウン外クリックで閉じる
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.quick-link-wrap')) {
+                searchModal.querySelectorAll('.quick-link-dropdown.open').forEach(d => d.classList.remove('open'));
+                searchModal.querySelectorAll('.quick-link.active').forEach(b => b.classList.remove('active'));
+            }
+        });
     }
-    
+
+    // 条文一覧データを取得（キャッシュがなければAPIから取得）
+    async function fetchArticleIndex(fullLawName) {
+        if (articleIndexCache[fullLawName]) return articleIndexCache[fullLawName];
+
+        // chrome.storage永続キャッシュを確認
+        const stored = await getStoredCache('idx_' + fullLawName);
+        if (stored) {
+            articleIndexCache[fullLawName] = stored;
+            return stored;
+        }
+
+        const lawId = LAW_IDS[fullLawName];
+        if (!lawId) return null;
+
+        try {
+            const response = await fetch(`https://laws.e-gov.go.jp/api/1/lawdata/${lawId}`);
+            if (!response.ok) return null;
+            const xmlText = await response.text();
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+            // パース済みDocumentをキャッシュ（個別条文抽出用・再パース不要）
+            lawXmlDocCache[fullLawName] = xmlDoc;
+
+            const articles = xmlDoc.querySelectorAll('MainProvision Article');
+            const index = [];
+            articles.forEach(article => {
+                const titleElem = article.querySelector('ArticleTitle');
+                const captionElem = article.querySelector('ArticleCaption');
+                if (!titleElem) return;
+                const title = titleElem.textContent.trim();
+                const caption = captionElem ? captionElem.textContent.trim() : '';
+
+                const match = title.match(/第(.+?)条((?:の[^の]+)*)/);
+                let display = title;
+                let articleRef = title;
+                if (match) {
+                    const mainNum = convertToNumber(match[1]);
+                    display = `第${mainNum}条`;
+                    articleRef = `第${mainNum}条`;
+                    if (match[2]) {
+                        const subParts = match[2].match(/の([^の]+)/g);
+                        if (subParts) {
+                            const subNums = subParts.map(p => convertToNumber(p.slice(1)));
+                            display += subNums.map(n => `の${n}`).join('');
+                            articleRef += subNums.map(n => `の${n}`).join('');
+                        }
+                    }
+                }
+                index.push({ title, caption, display, articleRef });
+            });
+
+            articleIndexCache[fullLawName] = index;
+            // localStorageにも保存
+            setStoredCache('idx_' + fullLawName, index);
+            return index;
+        } catch (e) {
+            return null;
+        }
+    }
+
     // モーダルに検索結果を表示
     async function showModalResult(lawName, articleNum, modalBody) {
-        modalBody.innerHTML = '<div class="loading">読み込み中...</div>';
+        // 略称を正式名称に変換
+        const fullLawName = LAW_ABBREVIATIONS[lawName] || lawName;
+        
+        // 全文XMLキャッシュがある場合は同期的に即描画（読み込み表示不要）
+        const hasFastPath = !!lawXmlDocCache[fullLawName] && !!articleIndexCache[fullLawName];
+        if (!hasFastPath) {
+            modalBody.innerHTML = '<div class="loading">読み込み中...</div>';
+        }
         
         try {
-            const result = await fetchArticle(lawName, articleNum);
+            // 一覧が未取得の場合のみ並行フェッチ
+            let articleResult;
+            if (!articleIndexCache[fullLawName]) {
+                const [result] = await Promise.all([
+                    fetchArticle(lawName, articleNum),
+                    fetchArticleIndex(fullLawName),
+                ]);
+                articleResult = result;
+            } else {
+                articleResult = await fetchArticle(lawName, articleNum);
+            }
             
             // resultが文字列の場合（parseArticleXmlからの戻り値）とオブジェクトの場合を処理
-            let content = typeof result === 'string' ? result : (result.content || result);
+            let content = typeof articleResult === 'string' ? articleResult : (articleResult.content || articleResult);
+            // ポップアップと同じパイプライン: サニタイズ → 外部リンク → 内部リンク＆括弧ハイライト
+            content = sanitizeArticleHtml(content);
+            content = processPopupContentOffline(content);
+            content = processRelatedArticles(content, lawName, articleNum, articleNum);
             
-            let html = `<div class="article-title">${lawName} ${articleNum}</div>`;
+            // 前後の条文を取得
+            const { prev, next } = getAdjacentArticles(fullLawName, articleNum);
+            
+            // 一覧プルダウンを構築
+            const indexData = articleIndexCache[fullLawName] || [];
+            const normalizedArticleNum = normalizeArticleRef(articleNum);
+            let dropdownItems = '';
+            for (const item of indexData) {
+                const isCurrent = normalizeArticleRef(item.articleRef) === normalizedArticleNum;
+                const caption = item.caption ? ` ${item.caption}` : '';
+                dropdownItems += `<div class="article-dropdown-item${isCurrent ? ' current' : ''}" data-law="${escapeHtml(fullLawName)}" data-article="${escapeHtml(item.articleRef)}">${escapeHtml(item.display)}${escapeHtml(caption)}</div>`;
+            }
+
+            let html = '';
+            // 前後ナビゲーション
+            html += `<div class="article-nav">`;
+            if (prev) {
+                html += `<button class="article-nav-btn article-nav-prev" data-law="${escapeHtml(fullLawName)}" data-article="${escapeHtml(prev.articleRef)}" title="${escapeHtml(prev.display)}">◂ 前条</button>`;
+            } else {
+                html += `<span class="article-nav-btn article-nav-disabled">◂ 前条</span>`;
+            }
+            html += `<div class="article-nav-dropdown-wrap">`;
+            html += `<button class="article-nav-btn article-nav-index" data-law="${escapeHtml(fullLawName)}">▾ 一覧</button>`;
+            html += `<div class="article-dropdown">${dropdownItems}</div>`;
+            html += `</div>`;
+            if (next) {
+                html += `<button class="article-nav-btn article-nav-next" data-law="${escapeHtml(fullLawName)}" data-article="${escapeHtml(next.articleRef)}" title="${escapeHtml(next.display)}">次条 ▸</button>`;
+            } else {
+                html += `<span class="article-nav-btn article-nav-disabled">次条 ▸</span>`;
+            }
+            html += `</div>`;
+            
+            html += `<div class="article-title">${fullLawName} ${articleNum}</div>`;
             html += `
                 <div class="study-controls">
                     <button class="cloze-toggle" type="button">穴埋め</button>
@@ -1648,6 +1892,53 @@
             html += `<div class="article-content">${content}</div>`;
             
             modalBody.innerHTML = html;
+
+            // 前後ナビゲーションのイベント
+            const searchInput = searchModal.querySelector('.search-input');
+            modalBody.querySelector('.article-nav-prev')?.addEventListener('click', function() {
+                const law = this.dataset.law;
+                const article = this.dataset.article;
+                searchInput.value = law + article;
+                showModalResult(law, article, modalBody);
+            });
+            modalBody.querySelector('.article-nav-next')?.addEventListener('click', function() {
+                const law = this.dataset.law;
+                const article = this.dataset.article;
+                searchInput.value = law + article;
+                showModalResult(law, article, modalBody);
+            });
+            // 一覧プルダウン
+            const dropdownWrap = modalBody.querySelector('.article-nav-dropdown-wrap');
+            const dropdownBtn = modalBody.querySelector('.article-nav-index');
+            const dropdown = modalBody.querySelector('.article-dropdown');
+            if (dropdownBtn && dropdown) {
+                dropdownBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const isOpen = dropdown.classList.toggle('open');
+                    if (isOpen) {
+                        // 現在の条文までスクロール
+                        const currentItem = dropdown.querySelector('.article-dropdown-item.current');
+                        if (currentItem) currentItem.scrollIntoView({ block: 'center' });
+                    }
+                });
+                dropdown.addEventListener('click', (e) => {
+                    const item = e.target.closest('.article-dropdown-item');
+                    if (!item) return;
+                    const law = item.dataset.law;
+                    const article = item.dataset.article;
+                    dropdown.classList.remove('open');
+                    searchInput.value = law + article;
+                    showModalResult(law, article, modalBody);
+                });
+                // 外部クリックで閉じる
+                const closeDropdown = (e) => {
+                    if (!dropdownWrap.contains(e.target)) {
+                        dropdown.classList.remove('open');
+                    }
+                };
+                document.addEventListener('click', closeDropdown, { once: false });
+                // cleanup: modalBodyが書き換えられたら自動的にGCされるが念のため
+            }
 
             const articleContent = modalBody.querySelector('.article-content');
             const clozeBtn = modalBody.querySelector('.cloze-toggle');
@@ -1680,8 +1971,25 @@
             });
             
         } catch (error) {
-            modalBody.innerHTML = `<div class="error">${error.message}</div>`;
+            modalBody.innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
         }
+    }
+
+    // 前後の条文を取得
+    function getAdjacentArticles(fullLawName, articleNum) {
+        const index = articleIndexCache[fullLawName];
+        if (!index || index.length === 0) return { prev: null, next: null };
+        
+        const normalizedTarget = normalizeArticleRef(articleNum);
+        
+        // articleRefで一致を探す（正規化して比較）
+        const currentIdx = index.findIndex(item => normalizeArticleRef(item.articleRef) === normalizedTarget);
+        if (currentIdx === -1) return { prev: null, next: null };
+        
+        return {
+            prev: currentIdx > 0 ? index[currentIdx - 1] : null,
+            next: currentIdx < index.length - 1 ? index[currentIdx + 1] : null,
+        };
     }
     
     // 検索モーダルを開く
@@ -1846,16 +2154,13 @@
         }
     });
 
-    // テキストから法令参照をパース
+    // テキストから法令参照をパース（正規表現はキャッシュ済み）
+    const PARSE_LAW_REF_PATTERN = new RegExp(
+        `(${Object.keys(LAW_IDS).join('|')}|${Object.keys(LAW_ABBREVIATIONS).sort((a, b) => b.length - a.length).join('|')})(第?[一二三四五六七八九十百千0-9０-９]+条(?:の[一二三四五六七八九十0-9０-９]+)?(?:第?[一二三四五六七八九十0-9０-９]+項)?(?:第?[一二三四五六七八九十0-9０-９]+号)?)`
+    );
     function parseLawReferenceFromText(text) {
         text = text.replace(/\s+/g, '').replace(/条の([一二三四五六七八九十0-9０-９]+)条/g, '条の$1');
-        const LAW_NAMES_STR = Object.keys(LAW_IDS).join('|');
-        const LAW_ABBREVS_STR = Object.keys(LAW_ABBREVIATIONS).sort((a, b) => b.length - a.length).join('|');
-        const pattern = new RegExp(
-            `(${LAW_NAMES_STR}|${LAW_ABBREVS_STR})(第?[一二三四五六七八九十百千0-9０-９]+条(?:の[一二三四五六七八九十0-9０-９]+)?(?:第?[一二三四五六七八九十0-9０-９]+項)?(?:第?[一二三四五六七八九十0-9０-９]+号)?)`
-        );
-        
-        const match = text.match(pattern);
+        const match = text.match(PARSE_LAW_REF_PATTERN);
         if (match) {
             let lawName = match[1];
             const articleNum = match[2];

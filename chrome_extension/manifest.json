@@ -39,7 +39,7 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["search.html", "search.js", "law-data.js", "cloze.js"],
+      "resources": ["search.html"],
       "matches": ["<all_urls>"]
     }
   ]

@@ -20,25 +20,29 @@
     border: 1px solid #ddd !important;
     border-radius: 8px !important;
     box-shadow: 0 4px 20px rgba(0,0,0,0.25) !important;
-    padding: 16px !important;
+    padding: 0 !important;
     max-width: 450px !important;
     max-height: 350px !important;
-    overflow-y: auto !important;
+    overflow: hidden !important;
     z-index: 2147483647 !important;
     font-family: 'Segoe UI', 'Meiryo', 'Yu Gothic', sans-serif !important;
     font-size: 14px !important;
     line-height: 1.6 !important;
     color: #333 !important;
     display: none;
+    flex-direction: column !important;
 }
 
 #law-popup-container.active {
-    display: block !important;
+    display: flex !important;
 }
 
 #law-popup-container .popup-content {
     color: #333 !important;
     text-align: left !important;
+    overflow-y: auto !important;
+    flex: 1 !important;
+    padding: 8px 16px !important;
 }
 
 #law-popup-container .popup-content p {
@@ -96,7 +100,10 @@
 }
 
 #law-popup-container .popup-study-controls {
-    margin-bottom: 8px !important;
+    margin: 0 !important;
+    padding: 6px 16px !important;
+    border-bottom: 1px solid #eee !important;
+    flex-shrink: 0 !important;
 }
 
 #law-popup-container .popup-cloze {
@@ -117,10 +124,11 @@
 #law-popup-container .popup-header {
     display: flex !important;
     align-items: center !important;
-    margin-bottom: 12px !important;
-    padding-bottom: 8px !important;
+    margin: 0 !important;
+    padding: 10px 16px !important;
     border-bottom: 2px solid #1a73e8 !important;
     gap: 8px !important;
+    flex-shrink: 0 !important;
 }
 
 /* 戻るボタン */
@@ -163,7 +171,8 @@
 }
 
 /* 条文内の関連条文リンク */
-#law-popup-container .law-ref-internal {
+#law-popup-container .law-ref-internal,
+#jyobun-search-modal .law-ref-internal {
     color: #1a73e8 !important;
     text-decoration: underline !important;
     text-decoration-style: dotted !important;
@@ -171,7 +180,8 @@
     transition: background-color 0.2s !important;
 }
 
-#law-popup-container .law-ref-internal:hover {
+#law-popup-container .law-ref-internal:hover,
+#jyobun-search-modal .law-ref-internal:hover {
     background-color: #e8f0fe !important;
     border-radius: 2px !important;
 }
@@ -193,7 +203,8 @@
 }
 
 /* 括弧内のテキスト（薄い灰色背景） */
-#law-popup-container .parentheses-content {
+#law-popup-container .parentheses-content,
+#jyobun-search-modal .parentheses-content {
     background-color: #e0e0e0 !important;
     border-radius: 2px !important;
     padding: 0 2px !important;
@@ -201,12 +212,13 @@
 
 /* 出典フッター */
 #law-popup-container .popup-footer {
-    margin-top: 12px !important;
-    padding-top: 8px !important;
+    margin: 0 !important;
+    padding: 6px 16px !important;
     border-top: 1px solid #ddd !important;
     font-size: 11px !important;
     color: #666 !important;
     text-align: right !important;
+    flex-shrink: 0 !important;
 }
 
 #law-popup-container .popup-footer a {
@@ -403,7 +415,7 @@
 #jyobun-search-modal .modal-header {
     background: linear-gradient(135deg, #1a237e, #3949ab) !important;
     color: white !important;
-    padding: 16px 20px !important;
+    padding: 8px 16px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
@@ -413,7 +425,7 @@
 
 #jyobun-search-modal .modal-header h2 {
     margin: 0 !important;
-    font-size: 18px !important;
+    font-size: 15px !important;
     font-weight: 500 !important;
 }
 
@@ -482,12 +494,12 @@
 }
 
 #jyobun-search-modal .search-btn {
-    padding: 12px 24px !important;
+    padding: 7px 16px !important;
     background: #ff9800 !important;
     color: white !important;
     border: none !important;
-    border-radius: 6px !important;
-    font-size: 16px !important;
+    border-radius: 5px !important;
+    font-size: 13px !important;
     font-weight: bold !important;
     cursor: pointer !important;
 }
@@ -504,6 +516,10 @@
     gap: 6px !important;
 }
 
+#jyobun-search-modal .quick-link-wrap {
+    position: relative !important;
+}
+
 #jyobun-search-modal .quick-link {
     padding: 5px 10px !important;
     background: white !important;
@@ -517,6 +533,53 @@
 #jyobun-search-modal .quick-link:hover {
     background: #3949ab !important;
     color: white !important;
+}
+
+#jyobun-search-modal .quick-link.active {
+    background: #3949ab !important;
+    color: white !important;
+}
+
+#jyobun-search-modal .quick-link-dropdown {
+    display: none !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    min-width: 240px !important;
+    max-height: 360px !important;
+    overflow-y: auto !important;
+    background: #fff !important;
+    border: 1px solid #ccc !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18) !important;
+    z-index: 200 !important;
+    padding: 4px 0 !important;
+    margin-top: 2px !important;
+}
+
+#jyobun-search-modal .quick-link-dropdown.open {
+    display: block !important;
+}
+
+#jyobun-search-modal .quick-link-dropdown-loading {
+    padding: 12px 14px !important;
+    font-size: 12px !important;
+    color: #888 !important;
+    text-align: center !important;
+}
+
+#jyobun-search-modal .quick-link-dropdown-item {
+    padding: 5px 14px !important;
+    font-size: 12px !important;
+    color: #333 !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    transition: background 0.1s !important;
+}
+
+#jyobun-search-modal .quick-link-dropdown-item:hover {
+    background: #e8eaf6 !important;
+    color: #1a237e !important;
 }
 
 #jyobun-search-modal .modal-body {
@@ -549,10 +612,16 @@
 }
 
 #jyobun-search-modal .modal-body .study-controls {
-    display: flex !important;
+    display: inline-flex !important;
     align-items: center !important;
     gap: 8px !important;
-    margin: 6px 0 12px 0 !important;
+    margin: 0 !important;
+    padding: 4px 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    background: transparent !important;
+    z-index: 10 !important;
+    border-bottom: none !important;
 }
 
 #jyobun-search-modal .modal-body .cloze-toggle {
@@ -563,6 +632,7 @@
     border-radius: 4px !important;
     font-size: 12px !important;
     cursor: pointer !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3) !important;
 }
 
 #jyobun-search-modal .modal-body .cloze-toggle:hover {
@@ -669,4 +739,159 @@
     background: linear-gradient(135deg, #1a237e, #3949ab) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 12px rgba(57, 73, 171, 0.4) !important;
+}
+
+/* 条文一覧 */
+#jyobun-search-modal .article-index {
+    padding: 10px !important;
+}
+
+#jyobun-search-modal .article-index-header {
+    font-size: 15px !important;
+    font-weight: bold !important;
+    color: #1a237e !important;
+    margin-bottom: 10px !important;
+    padding-bottom: 6px !important;
+    border-bottom: 2px solid #e8eaf6 !important;
+}
+
+#jyobun-search-modal .article-index-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    margin-bottom: 10px !important;
+}
+
+#jyobun-search-modal .article-index-link {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 52px !important;
+    height: 28px !important;
+    padding: 0 5px !important;
+    background: #e8eaf6 !important;
+    color: #283593 !important;
+    border-radius: 4px !important;
+    font-size: 12px !important;
+    cursor: pointer !important;
+    transition: all 0.15s !important;
+    user-select: none !important;
+}
+
+#jyobun-search-modal .article-index-link:hover {
+    background: #3949ab !important;
+    color: #fff !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 2px 6px rgba(57, 73, 171, 0.3) !important;
+}
+
+#jyobun-search-modal .article-index-note {
+    font-size: 11px !important;
+    color: #888 !important;
+    line-height: 1.5 !important;
+    padding-top: 6px !important;
+    border-top: 1px solid #eee !important;
+}
+
+/* 前後ナビゲーション */
+#jyobun-search-modal .article-nav {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin-bottom: 10px !important;
+    position: sticky !important;
+    top: 0 !important;
+    background: #fff !important;
+    z-index: 11 !important;
+    padding: 4px 0 !important;
+}
+
+#jyobun-search-modal .article-nav-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    padding: 5px 12px !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: all 0.15s !important;
+    white-space: nowrap !important;
+}
+
+#jyobun-search-modal .article-nav-prev,
+#jyobun-search-modal .article-nav-next {
+    background: #e8eaf6 !important;
+    color: #283593 !important;
+}
+
+#jyobun-search-modal .article-nav-prev:hover,
+#jyobun-search-modal .article-nav-next:hover {
+    background: #3949ab !important;
+    color: #fff !important;
+    box-shadow: 0 2px 6px rgba(57, 73, 171, 0.3) !important;
+    transform: translateY(-1px) !important;
+}
+
+#jyobun-search-modal .article-nav-dropdown-wrap {
+    position: relative !important;
+}
+
+#jyobun-search-modal .article-nav-index {
+    background: #f5f5f5 !important;
+    color: #555 !important;
+}
+
+#jyobun-search-modal .article-nav-index:hover {
+    background: #e0e0e0 !important;
+    color: #333 !important;
+}
+
+#jyobun-search-modal .article-dropdown {
+    display: none !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    min-width: 220px !important;
+    max-height: 320px !important;
+    overflow-y: auto !important;
+    background: #fff !important;
+    border: 1px solid #ccc !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.18) !important;
+    z-index: 100 !important;
+    padding: 4px 0 !important;
+}
+
+#jyobun-search-modal .article-dropdown.open {
+    display: block !important;
+}
+
+#jyobun-search-modal .article-dropdown-item {
+    padding: 5px 14px !important;
+    font-size: 12px !important;
+    color: #333 !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    transition: background 0.1s !important;
+}
+
+#jyobun-search-modal .article-dropdown-item:hover {
+    background: #e8eaf6 !important;
+    color: #1a237e !important;
+}
+
+#jyobun-search-modal .article-dropdown-item.current {
+    background: #3949ab !important;
+    color: #fff !important;
+    font-weight: 600 !important;
+}
+
+#jyobun-search-modal .article-nav-disabled {
+    background: #f0f0f0 !important;
+    color: #bbb !important;
+    cursor: default !important;
 }

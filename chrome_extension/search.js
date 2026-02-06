@@ -1,6 +1,13 @@
 // 条文スタディ - 検索ページスクリプト
 'use strict';
 
+// HTMLエスケープ（XSS対策）
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.appendChild(document.createTextNode(str));
+    return div.innerHTML;
+}
+
 // 条文キャッシュ（上限100件、LRU方式）
 const CACHE_MAX_SIZE = 100;
 const articleCache = {};
@@ -8,10 +15,11 @@ const cacheOrder = [];  // LRU追跡用
 
 function addToCache(key, value) {
     if (articleCache[key]) {
-        // 既存キーを最新に移動
+        // 既存キーを最新に移動し、値も更新
         const idx = cacheOrder.indexOf(key);
         if (idx > -1) cacheOrder.splice(idx, 1);
         cacheOrder.push(key);
+        articleCache[key] = value;
         return;
     }
     // 上限超過時は最古を削除
@@ -285,11 +293,11 @@ function parseArticleXml(xmlText, lawName) {
         const articleTitle = article.querySelector('ArticleTitle');
         
         if (articleCaption) {
-            html += `<div class="article-caption">（${articleCaption.textContent}）</div>`;
+            html += `<div class="article-caption">（${escapeHtml(articleCaption.textContent)}）</div>`;
         }
         
         if (articleTitle) {
-            html += `<div class="article-title-text">${articleTitle.textContent}</div>`;
+            html += `<div class="article-title-text">${escapeHtml(articleTitle.textContent)}</div>`;
         }
         
         const paragraphs = article.querySelectorAll(':scope > Paragraph');
@@ -299,7 +307,7 @@ function parseArticleXml(xmlText, lawName) {
             
             let paraHtml = '<p>';
             if (paraNum && paraNum.textContent) {
-                paraHtml += `<strong>${paraNum.textContent}</strong>　`;
+                paraHtml += `<strong>${escapeHtml(paraNum.textContent)}</strong>　`;
             }
             if (paraSentence) {
                 paraHtml += processXmlContent(paraSentence, lawName);
@@ -317,7 +325,7 @@ function parseArticleXml(xmlText, lawName) {
                     
                     let itemHtml = '<div class="item">';
                     if (itemTitle) {
-                        itemHtml += `<span class="item-title">${itemTitle.textContent}</span>　`;
+                        itemHtml += `<span class="item-title">${escapeHtml(itemTitle.textContent)}</span>　`;
                     }
                     if (itemSentence) {
                         itemHtml += processXmlContent(itemSentence, lawName);
@@ -419,7 +427,7 @@ async function displayArticle(lawName, articleNum, fullRef, addToHistory = true)
         const result = await fetchArticle(lawName, articleNum);
         
         resultDiv.innerHTML = `
-            <div class="article-title">${lawName} ${result.title || articleNum}</div>
+            <div class="article-title">${escapeHtml(lawName)} ${escapeHtml(result.title || articleNum)}</div>
             <div class="study-controls">
                 <button class="cloze-toggle" type="button">穴埋め</button>
             </div>
@@ -454,7 +462,7 @@ async function displayArticle(lawName, articleNum, fullRef, addToHistory = true)
         });
         
     } catch (error) {
-        resultDiv.innerHTML = `<div class="error">${error.message}</div>`;
+        resultDiv.innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
     }
 }
 
@@ -468,7 +476,7 @@ function showNoMatch(searchText) {
     resultDiv.innerHTML = `
         <div class="no-match">
             <h3>法令参照が見つかりませんでした</h3>
-            <p>「${searchText}」から法令参照を検出できませんでした。</p>
+            <p>「${escapeHtml(searchText)}」から法令参照を検出できませんでした。</p>
             <p>以下の形式で入力してください：</p>
             <ul>
                 <li>「特許法第29条」</li>
