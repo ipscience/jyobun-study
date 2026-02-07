@@ -720,17 +720,33 @@
 #jyobun-search-modal .law-select-buttons {
     display: flex !important;
     flex-wrap: wrap !important;
-    gap: 8px !important;
+    gap: 5px !important;
     justify-content: center !important;
 }
 
+#jyobun-search-modal .law-group-label {
+    width: 100% !important;
+    font-size: 11px !important;
+    font-weight: bold !important;
+    color: #7986cb !important;
+    margin-top: 6px !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 2px !important;
+    border-bottom: 1px solid rgba(121, 134, 203, 0.3) !important;
+    text-align: left !important;
+}
+
+#jyobun-search-modal .law-group-label:first-child {
+    margin-top: 0 !important;
+}
+
 #jyobun-search-modal .law-select-btn {
-    padding: 8px 14px !important;
+    padding: 5px 10px !important;
     background: linear-gradient(135deg, #3949ab, #5c6bc0) !important;
     color: white !important;
     border: none !important;
-    border-radius: 5px !important;
-    font-size: 13px !important;
+    border-radius: 4px !important;
+    font-size: 11px !important;
     font-weight: bold !important;
     cursor: pointer !important;
     transition: all 0.2s !important;

@@ -1633,17 +1633,50 @@
                     <h3>法令を選択してください</h3>
                     <p>「<strong>${articleNum}</strong>」を検索するには、下のボタンから法令を選んでください。</p>
                     <div class="law-select-buttons">
+                        <div class="law-group-label">知的財産法</div>
                         <button class="law-select-btn" data-law="特許法">特許法</button>
                         <button class="law-select-btn" data-law="実用新案法">実用新案法</button>
                         <button class="law-select-btn" data-law="意匠法">意匠法</button>
                         <button class="law-select-btn" data-law="商標法">商標法</button>
                         <button class="law-select-btn" data-law="著作権法">著作権法</button>
                         <button class="law-select-btn" data-law="不正競争防止法">不競法</button>
+                        <div class="law-group-label">憲法・民事法</div>
                         <button class="law-select-btn" data-law="憲法">憲法</button>
                         <button class="law-select-btn" data-law="民法">民法</button>
                         <button class="law-select-btn" data-law="商法">商法</button>
+                        <button class="law-select-btn" data-law="会社法">会社法</button>
                         <button class="law-select-btn" data-law="民事訴訟法">民訴法</button>
+                        <button class="law-select-btn" data-law="刑法">刑法</button>
                         <button class="law-select-btn" data-law="刑事訴訟法">刑訴法</button>
+                        <button class="law-select-btn" data-law="借地借家法">借地借家法</button>
+                        <div class="law-group-label">登記・手続法</div>
+                        <button class="law-select-btn" data-law="不動産登記法">不動産登記法</button>
+                        <button class="law-select-btn" data-law="商業登記法">商業登記法</button>
+                        <button class="law-select-btn" data-law="民事執行法">民事執行法</button>
+                        <button class="law-select-btn" data-law="民事保全法">民事保全法</button>
+                        <button class="law-select-btn" data-law="供託法">供託法</button>
+                        <button class="law-select-btn" data-law="司法書士法">司法書士法</button>
+                        <div class="law-group-label">行政法</div>
+                        <button class="law-select-btn" data-law="行政手続法">行政手続法</button>
+                        <button class="law-select-btn" data-law="行政不服審査法">行政不服審査法</button>
+                        <button class="law-select-btn" data-law="行政事件訴訟法">行政事件訴訟法</button>
+                        <button class="law-select-btn" data-law="国家賠償法">国家賠償法</button>
+                        <button class="law-select-btn" data-law="地方自治法">地方自治法</button>
+                        <div class="law-group-label">ビジネス・労働法</div>
+                        <button class="law-select-btn" data-law="労働基準法">労働基準法</button>
+                        <button class="law-select-btn" data-law="労働契約法">労働契約法</button>
+                        <button class="law-select-btn" data-law="独占禁止法">独占禁止法</button>
+                        <button class="law-select-btn" data-law="下請法">下請法</button>
+                        <button class="law-select-btn" data-law="フリーランス法">フリーランス法</button>
+                        <button class="law-select-btn" data-law="個人情報保護法">個人情報保護法</button>
+                        <button class="law-select-btn" data-law="消費者契約法">消費者契約法</button>
+                        <button class="law-select-btn" data-law="特定商取引法">特定商取引法</button>
+                        <button class="law-select-btn" data-law="公益通報者保護法">公益通報者保護法</button>
+                        <button class="law-select-btn" data-law="景品表示法">景品表示法</button>
+                        <div class="law-group-label">その他</div>
+                        <button class="law-select-btn" data-law="破産法">破産法</button>
+                        <button class="law-select-btn" data-law="民事再生法">民事再生法</button>
+                        <button class="law-select-btn" data-law="金融商品取引法">金商法</button>
                     </div>
                 </div>
             `;
