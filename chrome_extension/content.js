@@ -1449,7 +1449,7 @@
                     <div class="quick-links">
                         <div class="category-tabs">
                             <button class="category-tab" data-cat="ip">知財</button>
-                            <button class="category-tab" data-cat="civil">民事</button>
+                            <button class="category-tab" data-cat="civil">基本法</button>
                             <button class="category-tab" data-cat="reg">登記</button>
                             <button class="category-tab" data-cat="admin">行政</button>
                             <button class="category-tab" data-cat="biz">商取引</button>
