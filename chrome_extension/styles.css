@@ -510,23 +510,23 @@
 }
 
 #jyobun-search-modal .quick-links {
-    padding: 6px 12px !important;
+    padding: 8px 14px !important;
     background: #e8eaf6 !important;
 }
 
 #jyobun-search-modal .category-tabs {
     display: flex !important;
     flex-wrap: wrap !important;
-    gap: 4px !important;
+    gap: 5px !important;
     justify-content: center !important;
 }
 
 #jyobun-search-modal .category-tab {
-    padding: 4px 10px !important;
+    padding: 5px 12px !important;
     background: white !important;
     border: 1px solid #c5cae9 !important;
     border-radius: 4px !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
     font-weight: bold !important;
     color: #3949ab !important;
     cursor: pointer !important;
@@ -546,8 +546,8 @@
 #jyobun-search-modal .category-panel {
     display: none !important;
     flex-wrap: wrap !important;
-    gap: 4px !important;
-    padding-top: 6px !important;
+    gap: 5px !important;
+    padding-top: 8px !important;
     justify-content: center !important;
 }
 
@@ -560,11 +560,11 @@
 }
 
 #jyobun-search-modal .quick-link {
-    padding: 3px 7px !important;
+    padding: 4px 9px !important;
     background: white !important;
     border: 1px solid #c5cae9 !important;
-    border-radius: 3px !important;
-    font-size: 11px !important;
+    border-radius: 4px !important;
+    font-size: 12px !important;
     color: #3949ab !important;
     cursor: pointer !important;
 }
