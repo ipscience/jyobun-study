@@ -1435,7 +1435,7 @@
                 <div class="resize-handle resize-se" data-dir="se"></div>
                 <div class="resize-handle resize-sw" data-dir="sw"></div>
                 <div class="modal-header">
-                    <h2>📚 条文スタディ検索</h2>
+                    <h2>📚 条文スタディ</h2>
                     <div class="modal-controls">
                         <button class="modal-minimize" title="畳む">─</button>
                         <button class="modal-close" title="閉じる">×</button>
@@ -2027,7 +2027,7 @@
         
         const btn = document.createElement('button');
         btn.id = 'jyobun-floating-btn';
-        btn.innerHTML = '📚 条文スタディ検索';
+        btn.innerHTML = '📚 条文スタディ';
         btn.setAttribute('title', 'ドラッグで移動、クリックで検索');
         
         // 保存された位置を取得、またはデフォルト位置
