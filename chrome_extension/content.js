@@ -1455,7 +1455,7 @@
                             <button class="category-tab" data-cat="biz">商取引</button>
                             <button class="category-tab" data-cat="other">その他</button>
                         </div>
-                        <div class="category-panel" data-cat="ip" style="display:none;">
+                        <div class="category-panel" data-cat="ip">
                             <div class="quick-link-wrap"><button class="quick-link" data-law="特許法">特許法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="実用新案法">実用新案法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="意匠法">意匠法 ▾</button><div class="quick-link-dropdown"></div></div>
@@ -1463,7 +1463,7 @@
                             <div class="quick-link-wrap"><button class="quick-link" data-law="著作権法">著作権法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="不正競争防止法">不競法 ▾</button><div class="quick-link-dropdown"></div></div>
                         </div>
-                        <div class="category-panel" data-cat="civil" style="display:none;">
+                        <div class="category-panel" data-cat="civil">
                             <div class="quick-link-wrap"><button class="quick-link" data-law="憲法">憲法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="民法">民法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="会社法">会社法 ▾</button><div class="quick-link-dropdown"></div></div>
@@ -1473,7 +1473,7 @@
                             <div class="quick-link-wrap"><button class="quick-link" data-law="刑事訴訟法">刑訴法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="借地借家法">借地借家法 ▾</button><div class="quick-link-dropdown"></div></div>
                         </div>
-                        <div class="category-panel" data-cat="reg" style="display:none;">
+                        <div class="category-panel" data-cat="reg">
                             <div class="quick-link-wrap"><button class="quick-link" data-law="不動産登記法">不登法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="商業登記法">商登法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="民事執行法">民執法 ▾</button><div class="quick-link-dropdown"></div></div>
@@ -1481,14 +1481,14 @@
                             <div class="quick-link-wrap"><button class="quick-link" data-law="供託法">供託法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="司法書士法">司書法 ▾</button><div class="quick-link-dropdown"></div></div>
                         </div>
-                        <div class="category-panel" data-cat="admin" style="display:none;">
+                        <div class="category-panel" data-cat="admin">
                             <div class="quick-link-wrap"><button class="quick-link" data-law="行政手続法">行手法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="行政不服審査法">行審法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="行政事件訴訟法">行訴法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="国家賠償法">国賠法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="地方自治法">地自法 ▾</button><div class="quick-link-dropdown"></div></div>
                         </div>
-                        <div class="category-panel" data-cat="biz" style="display:none;">
+                        <div class="category-panel" data-cat="biz">
                             <div class="quick-link-wrap"><button class="quick-link" data-law="労働基準法">労基法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="労働契約法">労契法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="独占禁止法">独禁法 ▾</button><div class="quick-link-dropdown"></div></div>
@@ -1500,7 +1500,7 @@
                             <div class="quick-link-wrap"><button class="quick-link" data-law="公益通報者保護法">公益通報 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="景品表示法">景表法 ▾</button><div class="quick-link-dropdown"></div></div>
                         </div>
-                        <div class="category-panel" data-cat="other" style="display:none;">
+                        <div class="category-panel" data-cat="other">
                             <div class="quick-link-wrap"><button class="quick-link" data-law="破産法">破産法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="民事再生法">民再法 ▾</button><div class="quick-link-dropdown"></div></div>
                             <div class="quick-link-wrap"><button class="quick-link" data-law="金融商品取引法">金商法 ▾</button><div class="quick-link-dropdown"></div></div>
@@ -1768,11 +1768,11 @@
             tab.addEventListener('click', () => {
                 const cat = tab.dataset.cat;
                 const panel = searchModal.querySelector(`.category-panel[data-cat="${cat}"]`);
-                const isOpen = panel.style.display !== 'none';
+                const isOpen = panel.classList.contains('active');
                 
                 // 全パネルを閉じる
                 searchModal.querySelectorAll('.category-panel').forEach(p => {
-                    p.style.display = 'none';
+                    p.classList.remove('active');
                 });
                 searchModal.querySelectorAll('.category-tab').forEach(t => {
                     t.classList.remove('active');
@@ -1780,7 +1780,7 @@
                 
                 // クリックしたものをトグル
                 if (!isOpen) {
-                    panel.style.display = 'flex';
+                    panel.classList.add('active');
                     tab.classList.add('active');
                 }
             });

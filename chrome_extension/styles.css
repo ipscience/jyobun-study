@@ -551,6 +551,10 @@
     justify-content: center !important;
 }
 
+#jyobun-search-modal .category-panel.active {
+    display: flex !important;
+}
+
 #jyobun-search-modal .quick-link-wrap {
     position: relative !important;
 }
