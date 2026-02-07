@@ -510,29 +510,45 @@
 }
 
 #jyobun-search-modal .quick-links {
-    padding: 8px 12px !important;
+    padding: 6px 12px !important;
     background: #e8eaf6 !important;
-    display: flex !important;
-    flex-wrap: wrap !important;
-    gap: 4px 8px !important;
 }
 
-#jyobun-search-modal .quick-link-category {
+#jyobun-search-modal .category-tabs {
     display: flex !important;
     flex-wrap: wrap !important;
-    align-items: center !important;
-    gap: 3px !important;
-    width: 100% !important;
+    gap: 4px !important;
+    justify-content: center !important;
 }
 
-#jyobun-search-modal .category-label {
-    font-size: 10px !important;
+#jyobun-search-modal .category-tab {
+    padding: 4px 10px !important;
+    background: white !important;
+    border: 1px solid #c5cae9 !important;
+    border-radius: 4px !important;
+    font-size: 11px !important;
     font-weight: bold !important;
-    color: #5c6bc0 !important;
-    min-width: 36px !important;
-    text-align: right !important;
-    padding-right: 4px !important;
-    flex-shrink: 0 !important;
+    color: #3949ab !important;
+    cursor: pointer !important;
+    transition: all 0.15s !important;
+}
+
+#jyobun-search-modal .category-tab:hover {
+    background: #c5cae9 !important;
+}
+
+#jyobun-search-modal .category-tab.active {
+    background: #3949ab !important;
+    color: white !important;
+    border-color: #3949ab !important;
+}
+
+#jyobun-search-modal .category-panel {
+    display: none !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    padding-top: 6px !important;
+    justify-content: center !important;
 }
 
 #jyobun-search-modal .quick-link-wrap {
