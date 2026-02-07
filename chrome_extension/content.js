@@ -1447,18 +1447,62 @@
                         <button class="search-btn">検索</button>
                     </div>
                     <div class="quick-links">
-                        <div class="quick-link-wrap"><button class="quick-link" data-law="特許法">特許法 ▾</button><div class="quick-link-dropdown"></div></div>
-                        <div class="quick-link-wrap"><button class="quick-link" data-law="実用新案法">実用新案法 ▾</button><div class="quick-link-dropdown"></div></div>
-                        <div class="quick-link-wrap"><button class="quick-link" data-law="意匠法">意匠法 ▾</button><div class="quick-link-dropdown"></div></div>
-                        <div class="quick-link-wrap"><button class="quick-link" data-law="商標法">商標法 ▾</button><div class="quick-link-dropdown"></div></div>
-                        <div class="quick-link-wrap"><button class="quick-link" data-law="著作権法">著作権法 ▾</button><div class="quick-link-dropdown"></div></div>
-                        <div class="quick-link-wrap"><button class="quick-link" data-law="不正競争防止法">不競法 ▾</button><div class="quick-link-dropdown"></div></div>
-                        <div class="quick-link-wrap"><button class="quick-link" data-law="憲法">憲法 ▾</button><div class="quick-link-dropdown"></div></div>
-                        <div class="quick-link-wrap"><button class="quick-link" data-law="民法">民法 ▾</button><div class="quick-link-dropdown"></div></div>
-                        <div class="quick-link-wrap"><button class="quick-link" data-law="刑法">刑法 ▾</button><div class="quick-link-dropdown"></div></div>
-                        <div class="quick-link-wrap"><button class="quick-link" data-law="商法">商法 ▾</button><div class="quick-link-dropdown"></div></div>
-                        <div class="quick-link-wrap"><button class="quick-link" data-law="民事訴訟法">民訴法 ▾</button><div class="quick-link-dropdown"></div></div>
-                        <div class="quick-link-wrap"><button class="quick-link" data-law="刑事訴訟法">刑訴法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        <div class="quick-link-category">
+                            <span class="category-label">知財</span>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="特許法">特許法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="実用新案法">実用新案法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="意匠法">意匠法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="商標法">商標法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="著作権法">著作権法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="不正競争防止法">不競法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        </div>
+                        <div class="quick-link-category">
+                            <span class="category-label">民事</span>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="憲法">憲法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="民法">民法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="会社法">会社法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="商法">商法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="刑法">刑法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="民事訴訟法">民訴法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="刑事訴訟法">刑訴法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="借地借家法">借地借家法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        </div>
+                        <div class="quick-link-category">
+                            <span class="category-label">登記</span>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="不動産登記法">不登法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="商業登記法">商登法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="民事執行法">民執法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="民事保全法">民保法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="供託法">供託法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="司法書士法">司書法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        </div>
+                        <div class="quick-link-category">
+                            <span class="category-label">行政</span>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="行政手続法">行手法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="行政不服審査法">行審法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="行政事件訴訟法">行訴法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="国家賠償法">国賠法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="地方自治法">地自法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        </div>
+                        <div class="quick-link-category">
+                            <span class="category-label">商取引</span>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="労働基準法">労基法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="労働契約法">労契法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="独占禁止法">独禁法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="下請法">下請法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="フリーランス法">FL法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="個人情報保護法">個情法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="消費者契約法">消契法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="特定商取引法">特商法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="公益通報者保護法">公益通報 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="景品表示法">景表法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        </div>
+                        <div class="quick-link-category">
+                            <span class="category-label">その他</span>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="破産法">破産法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="民事再生法">民再法 ▾</button><div class="quick-link-dropdown"></div></div>
+                            <div class="quick-link-wrap"><button class="quick-link" data-law="金融商品取引法">金商法 ▾</button><div class="quick-link-dropdown"></div></div>
+                        </div>
                     </div>
                     <div class="modal-body">
                         <div class="welcome">

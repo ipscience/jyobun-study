@@ -510,11 +510,29 @@
 }
 
 #jyobun-search-modal .quick-links {
-    padding: 10px 20px !important;
+    padding: 8px 12px !important;
     background: #e8eaf6 !important;
     display: flex !important;
     flex-wrap: wrap !important;
-    gap: 6px !important;
+    gap: 4px 8px !important;
+}
+
+#jyobun-search-modal .quick-link-category {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 3px !important;
+    width: 100% !important;
+}
+
+#jyobun-search-modal .category-label {
+    font-size: 10px !important;
+    font-weight: bold !important;
+    color: #5c6bc0 !important;
+    min-width: 36px !important;
+    text-align: right !important;
+    padding-right: 4px !important;
+    flex-shrink: 0 !important;
 }
 
 #jyobun-search-modal .quick-link-wrap {
@@ -522,11 +540,11 @@
 }
 
 #jyobun-search-modal .quick-link {
-    padding: 5px 10px !important;
+    padding: 3px 7px !important;
     background: white !important;
     border: 1px solid #c5cae9 !important;
-    border-radius: 4px !important;
-    font-size: 12px !important;
+    border-radius: 3px !important;
+    font-size: 11px !important;
     color: #3949ab !important;
     cursor: pointer !important;
 }
