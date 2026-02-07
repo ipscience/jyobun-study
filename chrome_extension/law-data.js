@@ -48,7 +48,6 @@ window.JyobunStudy.LAW_IDS = {
     '民事執行法': '354AC0000000004',
     '民事保全法': '401AC0000000091',
     '供託法': '132AC0000000015',
-    '司法書士法': '325AC0000000197',
 };
 
 // 略称から正式名称へのマッピング
@@ -122,6 +121,5 @@ window.JyobunStudy.LAW_ARTICLE_COUNTS = {
     '民事執行法': 167,
     '民事保全法': 65,
     '供託法': 10,
-    '司法書士法': 83,
 };
 const LAW_ARTICLE_COUNTS = window.JyobunStudy.LAW_ARTICLE_COUNTS;
