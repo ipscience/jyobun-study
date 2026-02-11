@@ -1,12 +1,11 @@
 {
   "manifest_version": 3,
   "name": "条文スタディ",
-  "version": "1.0",
+  "version": "1.2",
   "description": "日本の法令条文を素早く参照・学習するためのツール。Webページ上の法令参照（特許法第29条など）をハイライト表示し、ポップアップで条文を確認できます。穴埋め学習機能で条文の暗記もサポートします。",
   "permissions": [
     "storage",
-    "contextMenus",
-    "tabs"
+    "contextMenus"
   ],
   "host_permissions": [
     "https://laws.e-gov.go.jp/*"

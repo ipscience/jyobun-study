@@ -1291,7 +1291,7 @@
 
         // e-Gov法令検索へのリンクを追加
         if (lawId) {
-            content += `<p style="margin-top: 12px; font-size: 12px;"><a href="https://laws.e-gov.go.jp/law/${lawId}" target="_blank" rel="noopener noreferrer" style="color: #1a73e8;">e-Gov法令検索で全文を見る →</a></p>`;
+            content += `<p style="margin-top: 12px; font-size: 13px;"><a href="https://laws.e-gov.go.jp/law/${lawId}" target="_blank" rel="noopener noreferrer" style="color: #1a73e8;">e-Gov法令検索で全文を見る →</a></p>`;
         }
         return content;
     }
@@ -1761,14 +1761,16 @@
             if (e.key === 'Enter') doModalSearch();
         });
         
-        // カテゴリタブ — クリックで法令パネルを展開/折りたたみ
+        // カテゴリタブ — クリックで切り替え（常に1つのタブが開いた状態を維持）
         searchModal.querySelectorAll('.category-tab').forEach(tab => {
             tab.addEventListener('click', () => {
                 const cat = tab.dataset.cat;
                 const panel = searchModal.querySelector(`.category-panel[data-cat="${cat}"]`);
-                const isOpen = panel.classList.contains('active');
                 
-                // 全パネルを閉じる
+                // 既にアクティブなタブをクリックした場合は何もしない（常駐維持）
+                if (tab.classList.contains('active')) return;
+                
+                // 全パネル・タブを非アクティブにしてから、選択したものをアクティブに
                 searchModal.querySelectorAll('.category-panel').forEach(p => {
                     p.classList.remove('active');
                 });
@@ -1776,11 +1778,8 @@
                     t.classList.remove('active');
                 });
                 
-                // クリックしたものをトグル
-                if (!isOpen) {
-                    panel.classList.add('active');
-                    tab.classList.add('active');
-                }
+                panel.classList.add('active');
+                tab.classList.add('active');
             });
         });
         
@@ -2150,7 +2149,7 @@
                 border-radius: 25px !important;
                 box-shadow: 0 4px 12px rgba(26, 35, 126, 0.4) !important;
                 cursor: grab !important;
-                font-size: 14px !important;
+                font-size: 15px !important;
                 font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif !important;
                 color: white !important;
                 font-weight: bold !important;

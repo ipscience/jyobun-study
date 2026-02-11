@@ -26,7 +26,7 @@
     overflow: hidden !important;
     z-index: 2147483647 !important;
     font-family: 'Segoe UI', 'Meiryo', 'Yu Gothic', sans-serif !important;
-    font-size: 14px !important;
+    font-size: 15px !important;
     line-height: 1.6 !important;
     color: #333 !important;
     display: none;
@@ -110,7 +110,7 @@
     background: #1a73e8 !important;
     color: white !important;
     border: none !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
     cursor: pointer !important;
     padding: 4px 10px !important;
     border-radius: 4px !important;
@@ -163,7 +163,7 @@
 #law-popup-container .popup-header .popup-title {
     font-weight: bold !important;
     color: #1a73e8 !important;
-    font-size: 15px !important;
+    font-size: 16px !important;
     flex-grow: 1 !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -215,7 +215,7 @@
     margin: 0 !important;
     padding: 6px 16px !important;
     border-top: 1px solid #ddd !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
     color: #666 !important;
     text-align: right !important;
     flex-shrink: 0 !important;
@@ -246,7 +246,7 @@
     align-items: center !important;
     justify-content: center !important;
     gap: 6px !important;
-    font-size: 14px !important;
+    font-size: 15px !important;
     font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif !important;
     color: white !important;
     transition: transform 0.2s, box-shadow 0.2s !important;
@@ -294,7 +294,7 @@
     color: white !important;
     padding: 6px 10px !important;
     border-radius: 4px !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
     white-space: nowrap !important;
     opacity: 0 !important;
     pointer-events: none !important;
@@ -425,7 +425,7 @@
 
 #jyobun-search-modal .modal-header h2 {
     margin: 0 !important;
-    font-size: 15px !important;
+    font-size: 16px !important;
     font-weight: 500 !important;
 }
 
@@ -435,8 +435,8 @@
     align-items: center !important;
 }
 
-#jyobun-search-modal .modal-minimize,
-#jyobun-search-modal .modal-close {
+#jyobun-search-modal button.modal-minimize,
+#jyobun-search-modal button.modal-close {
     background: transparent !important;
     border: none !important;
     color: white !important;
@@ -449,8 +449,8 @@
     transition: background 0.2s, opacity 0.2s !important;
 }
 
-#jyobun-search-modal .modal-minimize:hover,
-#jyobun-search-modal .modal-close:hover {
+#jyobun-search-modal button.modal-minimize:hover,
+#jyobun-search-modal button.modal-close:hover {
     opacity: 1 !important;
     background: rgba(255, 255, 255, 0.15) !important;
 }
@@ -484,7 +484,7 @@
     padding: 6px 12px !important;
     border: 1px solid #ccc !important;
     border-radius: 6px !important;
-    font-size: 14px !important;
+    font-size: 15px !important;
     outline: none !important;
 }
 
@@ -493,19 +493,19 @@
     box-shadow: 0 0 0 2px rgba(57, 73, 171, 0.2) !important;
 }
 
-#jyobun-search-modal .search-btn {
+#jyobun-search-modal button.search-btn {
     padding: 4px 14px !important;
     background: #ff9800 !important;
     color: white !important;
     border: none !important;
     border-radius: 5px !important;
-    font-size: 13px !important;
+    font-size: 14px !important;
     font-weight: bold !important;
     cursor: pointer !important;
     align-self: center !important;
 }
 
-#jyobun-search-modal .search-btn:hover {
+#jyobun-search-modal button.search-btn:hover {
     background: #f57c00 !important;
 }
 
@@ -521,23 +521,23 @@
     justify-content: center !important;
 }
 
-#jyobun-search-modal .category-tab {
+#jyobun-search-modal button.category-tab {
     padding: 5px 12px !important;
     background: white !important;
     border: 1px solid #c5cae9 !important;
     border-radius: 4px !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
     font-weight: bold !important;
     color: #3949ab !important;
     cursor: pointer !important;
     transition: all 0.15s !important;
 }
 
-#jyobun-search-modal .category-tab:hover {
+#jyobun-search-modal button.category-tab:hover {
     background: #c5cae9 !important;
 }
 
-#jyobun-search-modal .category-tab.active {
+#jyobun-search-modal button.category-tab.active {
     background: #3949ab !important;
     color: white !important;
     border-color: #3949ab !important;
@@ -559,22 +559,22 @@
     position: relative !important;
 }
 
-#jyobun-search-modal .quick-link {
+#jyobun-search-modal button.quick-link {
     padding: 4px 9px !important;
     background: white !important;
     border: 1px solid #c5cae9 !important;
     border-radius: 4px !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
     color: #3949ab !important;
     cursor: pointer !important;
 }
 
-#jyobun-search-modal .quick-link:hover {
+#jyobun-search-modal button.quick-link:hover {
     background: #3949ab !important;
     color: white !important;
 }
 
-#jyobun-search-modal .quick-link.active {
+#jyobun-search-modal button.quick-link.active {
     background: #3949ab !important;
     color: white !important;
 }
@@ -602,14 +602,14 @@
 
 #jyobun-search-modal .quick-link-dropdown-loading {
     padding: 12px 14px !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
     color: #888 !important;
     text-align: center !important;
 }
 
 #jyobun-search-modal .quick-link-dropdown-item {
     padding: 5px 14px !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
     color: #333 !important;
     cursor: pointer !important;
     white-space: nowrap !important;
@@ -642,7 +642,7 @@
 }
 
 #jyobun-search-modal .modal-body .article-title {
-    font-size: 16px !important;
+    font-size: 17px !important;
     font-weight: bold !important;
     color: #1a237e !important;
     margin-bottom: 12px !important;
@@ -663,28 +663,28 @@
     border-bottom: none !important;
 }
 
-#jyobun-search-modal .modal-body .cloze-toggle {
-    padding: 4px 10px !important;
+#jyobun-search-modal .modal-body button.cloze-toggle {
+    padding: 6px 12px !important;
     background: #3949ab !important;
     color: #fff !important;
     border: none !important;
     border-radius: 4px !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
     cursor: pointer !important;
     box-shadow: 0 1px 4px rgba(0,0,0,0.3) !important;
 }
 
-#jyobun-search-modal .modal-body .cloze-toggle:hover {
+#jyobun-search-modal .modal-body button.cloze-toggle:hover {
     background: #303f9f !important;
 }
 
 #jyobun-search-modal .modal-body .cloze-note {
-    font-size: 11px !important;
+    font-size: 12px !important;
     color: #666 !important;
 }
 
 #jyobun-search-modal .modal-body .article-content {
-    font-size: 14px !important;
+    font-size: 15px !important;
     line-height: 1.7 !important;
     color: #333 !important;
 }
@@ -719,7 +719,7 @@
     padding: 10px 20px !important;
     background: #f5f5f5 !important;
     border-top: 1px solid #e0e0e0 !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
     color: #666 !important;
     text-align: right !important;
 }
@@ -742,13 +742,13 @@
 #jyobun-search-modal .select-law-prompt h3 {
     color: #1a237e !important;
     margin: 0 0 8px 0 !important;
-    font-size: 18px !important;
+    font-size: 20px !important;
 }
 
 #jyobun-search-modal .select-law-prompt p {
     color: #666 !important;
     margin-bottom: 15px !important;
-    font-size: 14px !important;
+    font-size: 15px !important;
 }
 
 #jyobun-search-modal .select-law-prompt strong {
@@ -764,7 +764,7 @@
 
 #jyobun-search-modal .law-group-label {
     width: 100% !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
     font-weight: bold !important;
     color: #7986cb !important;
     margin-top: 6px !important;
@@ -778,19 +778,19 @@
     margin-top: 0 !important;
 }
 
-#jyobun-search-modal .law-select-btn {
-    padding: 5px 10px !important;
+#jyobun-search-modal button.law-select-btn {
+    padding: 8px 14px !important;
     background: linear-gradient(135deg, #3949ab, #5c6bc0) !important;
     color: white !important;
     border: none !important;
     border-radius: 4px !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
     font-weight: bold !important;
     cursor: pointer !important;
     transition: all 0.2s !important;
 }
 
-#jyobun-search-modal .law-select-btn:hover {
+#jyobun-search-modal button.law-select-btn:hover {
     background: linear-gradient(135deg, #1a237e, #3949ab) !important;
     transform: translateY(-2px) !important;
     box-shadow: 0 4px 12px rgba(57, 73, 171, 0.4) !important;
@@ -802,7 +802,7 @@
 }
 
 #jyobun-search-modal .article-index-header {
-    font-size: 15px !important;
+    font-size: 16px !important;
     font-weight: bold !important;
     color: #1a237e !important;
     margin-bottom: 10px !important;
@@ -827,7 +827,7 @@
     background: #e8eaf6 !important;
     color: #283593 !important;
     border-radius: 4px !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
     cursor: pointer !important;
     transition: all 0.15s !important;
     user-select: none !important;
@@ -841,7 +841,7 @@
 }
 
 #jyobun-search-modal .article-index-note {
-    font-size: 11px !important;
+    font-size: 12px !important;
     color: #888 !important;
     line-height: 1.5 !important;
     padding-top: 6px !important;
@@ -862,28 +862,28 @@
     padding: 12px 0 4px 0 !important;
 }
 
-#jyobun-search-modal .article-nav-btn {
+#jyobun-search-modal button.article-nav-btn {
     display: inline-flex !important;
     align-items: center !important;
     gap: 4px !important;
     padding: 5px 12px !important;
     border: none !important;
     border-radius: 6px !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
     font-weight: 600 !important;
     cursor: pointer !important;
     transition: all 0.15s !important;
     white-space: nowrap !important;
 }
 
-#jyobun-search-modal .article-nav-prev,
-#jyobun-search-modal .article-nav-next {
+#jyobun-search-modal button.article-nav-prev,
+#jyobun-search-modal button.article-nav-next {
     background: #e8eaf6 !important;
     color: #283593 !important;
 }
 
-#jyobun-search-modal .article-nav-prev:hover,
-#jyobun-search-modal .article-nav-next:hover {
+#jyobun-search-modal button.article-nav-prev:hover,
+#jyobun-search-modal button.article-nav-next:hover {
     background: #3949ab !important;
     color: #fff !important;
     box-shadow: 0 2px 6px rgba(57, 73, 171, 0.3) !important;
@@ -894,12 +894,12 @@
     position: relative !important;
 }
 
-#jyobun-search-modal .article-nav-index {
+#jyobun-search-modal button.article-nav-index {
     background: #f5f5f5 !important;
     color: #555 !important;
 }
 
-#jyobun-search-modal .article-nav-index:hover {
+#jyobun-search-modal button.article-nav-index:hover {
     background: #e0e0e0 !important;
     color: #333 !important;
 }
@@ -927,7 +927,7 @@
 
 #jyobun-search-modal .article-dropdown-item {
     padding: 5px 14px !important;
-    font-size: 12px !important;
+    font-size: 13px !important;
     color: #333 !important;
     cursor: pointer !important;
     white-space: nowrap !important;

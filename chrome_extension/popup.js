@@ -205,7 +205,7 @@ function parseArticleXml(xmlText, lawName) {
         const articleTitle = article.querySelector('ArticleTitle');
         
         if (articleCaption) {
-            html += `<div style="color:#666;font-size:12px;margin-bottom:4px;">（${escapeHtml(articleCaption.textContent)}）</div>`;
+            html += `<div style="color:#666;font-size:13px;margin-bottom:4px;">（${escapeHtml(articleCaption.textContent)}）</div>`;
         }
         
         if (articleTitle) {
